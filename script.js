@@ -86,19 +86,17 @@
   loop();
 })();
 
-/* ─── Portrait 3-D head-turn ───────────────────────────────────── */
+/* ─── Portrait mouse-follow ────────────────────────────────────── */
 (function () {
-  const img = document.getElementById('portrait-img');
+  const img = document.getElementById('hero-portrait');
   if (!img) return;
 
-  let tx = 0, ty = 0, cx = 0, cy = 0;
-  let glowReady = false;
-  setTimeout(function () { glowReady = true; }, 1100); // after fade-in
+  let tx = 0, ty = 0;
+  let cx = 0, cy = 0;
 
-  /* Rotation range — higher = more dramatic turn */
-  const ROT_Y  = 22;   // degrees left / right
-  const ROT_X  = 9;    // degrees up / down
-  const PERSP  = 650;  // perspective in px — lower = more intense 3-D
+  const MOVE  = 55;
+  const TILTX = 10;
+  const TILTY = 16;
 
   window.addEventListener('mousemove', function (e) {
     tx = (e.clientX / window.innerWidth  - 0.5) * 2;
@@ -107,32 +105,24 @@
 
   window.addEventListener('deviceorientation', function (e) {
     if (e.gamma == null) return;
-    tx = Math.max(-1, Math.min(1, e.gamma  / 40));
-    ty = Math.max(-1, Math.min(1, (e.beta - 45) / 40));
+    tx = Math.max(-1, Math.min(1, e.gamma / 45));
+    ty = Math.max(-1, Math.min(1, (e.beta - 45) / 45));
   });
 
   function loop() {
-    cx += (tx - cx) * 0.09;   // slightly faster lerp = snappier feel
-    cy += (ty - cy) * 0.09;
+    cx += (tx - cx) * 0.07;
+    cy += (ty - cy) * 0.07;
 
-    /* 3-D rotation around the eye-line pivot (set in CSS transform-origin) */
+    var rotX  = -cy * TILTX;
+    var rotY  =  cx * TILTY;
+    var moveX =  cx * MOVE;
+    var moveY =  cy * MOVE * 0.5;
+
     img.style.transform =
-      'perspective(' + PERSP + 'px)' +
-      ' rotateY(' + (cx * ROT_Y).toFixed(2) + 'deg)' +
-      ' rotateX(' + (-cy * ROT_X).toFixed(2) + 'deg)';
-
-    /* Dynamic glow — intensity rises when face is turned further */
-    if (glowReady) {
-      var dist  = Math.sqrt(cx * cx + cy * cy);          // 0–1.41
-      var vAmt  = (0.22 + dist * 0.38).toFixed(2);       // violet glow
-      var cAmt  = (0.07 + dist * 0.16).toFixed(2);       // cyan glow
-      var vPx   = Math.round(55  + dist * 55);           // violet radius
-      var cPx   = Math.round(110 + dist * 80);           // cyan radius
-      img.style.filter =
-        'drop-shadow(0 0 ' + vPx + 'px rgba(124,58,237,' + vAmt + '))' +
-        ' drop-shadow(0 0 ' + cPx + 'px rgba(34,211,238,' + cAmt + '))' +
-        ' drop-shadow(0 0 240px rgba(124,58,237,0.06))';
-    }
+      'perspective(900px)' +
+      ' rotateX(' + rotX.toFixed(3) + 'deg)' +
+      ' rotateY(' + rotY.toFixed(3) + 'deg)' +
+      ' translate(' + moveX.toFixed(2) + 'px,' + moveY.toFixed(2) + 'px)';
 
     requestAnimationFrame(loop);
   }
