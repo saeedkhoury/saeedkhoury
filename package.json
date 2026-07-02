@@ -1,0 +1,13 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "Simple static website",
+  "main": "script.js",
+  "scripts": {
+    "start": "open index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Saeed Khoury",
+  "license": "ISC",
+  "dependencies": {}
+}

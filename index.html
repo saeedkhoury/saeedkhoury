@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saeed Khoury — Software Engineer & Vibecoder</title>
+  <meta name="description" content="Saeed Khoury — Software Engineering student building real-world solutions with code and AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Particle canvas -->  
+<canvas id="bg-canvas"></canvas>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+  <a href="#home" class="nav-brand">SK</a>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-menu" id="nav-menu">
+    <li><a href="#home"        class="nav-link">Home</a></li>
+    <li><a href="#about"       class="nav-link">About</a></li>
+    <li><a href="#vibecoding"  class="nav-link">Vibecoding</a></li>
+    <li><a href="#projects"    class="nav-link">Projects</a></li>
+    <li><a href="#contact"     class="nav-link">Contact</a></li>
+  </ul>
+  <a href="assets/cv/CV.pdf" download class="btn btn-sm nav-cv">Resume</a>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────── -->
+<section id="home" class="hero">
+
+  <!-- Portrait: 3-D perspective rotation — head turns to follow cursor -->
+  <div class="hero-portrait-wrap" id="portrait-wrap">
+    <div class="portrait-glow" id="portrait-glow"></div>
+    <img src="assets/saeed-nobg.png" class="hero-portrait" id="portrait-img" alt="Saeed Khoury" />
+  </div>
+
+  <!-- Name: bottom center, one line -->
+  <div class="hero-name-bar">
+    <h1 class="hero-name">Saeed Khoury</h1>
+    <p class="hero-subtitle"><span id="typewriter"></span><span class="type-cursor">|</span></p>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span>scroll</span>
+  </div>
+</section>
+
+<!-- ─── INTRO (formerly hero text) ─────────────── -->
+<section class="intro-band">
+  <div class="section-inner intro-inner">
+    <div class="intro-badge">
+      <span class="badge-dot"></span>
+      Open to internships &amp; collaborations
+    </div>
+    <p class="intro-bio">
+      Third-year Software Engineering student building real-world solutions —
+      with code, curiosity, and a little AI magic.
+    </p>
+    <div class="hero-cta">
+      <a href="assets/cv/CV.pdf" target="_blank" class="btn btn-primary">View Resume</a>
+      <a href="#projects" class="btn btn-ghost">See Projects ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ABOUT ──────────────────────────────────── -->
+<section id="about" class="section about">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="eyebrow">About me</span>
+      <h2 class="section-title">The person behind the prompt</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          I'm a <strong>highly motivated third-year Software Engineering student</strong>
+          with hands-on experience in C, Java, Python, Assembly, and SQL — backed by
+          a strong foundation in algorithms, data structures, and system-level programming.
+        </p>
+        <p>
+          My coursework spans <strong>Database Management Systems</strong>, OOP,
+          Software-Intensive Systems Engineering, and full-stack development.
+          I've also completed a comprehensive <strong>Quality Assurance</strong> course
+          covering manual testing and test-case design.
+        </p>
+        <p>
+          I explore IoT systems, hybrid cloud infrastructure, and real-time data
+          processing — and I bring a solution-oriented mindset to every project I touch.
+        </p>
+
+        <div class="skill-pills">
+          <span>Java</span><span>Python</span><span>C</span><span>Assembly</span>
+          <span>SQL</span><span>Data Structures</span><span>Algorithms</span>
+          <span>OOP</span><span>Quality Assurance</span><span>Cloud / IoT</span>
+          <span>HTML · CSS · JS</span>
+        </div>
+      </div>
+
+      <div class="terminal-card reveal">
+        <div class="terminal-bar">
+          <span class="tb-dot red"></span>
+          <span class="tb-dot yellow"></span>
+          <span class="tb-dot green"></span>
+          <span class="tb-title">saeed@portfolio ~ zsh</span>
+        </div>
+        <div class="terminal-body" id="terminal-body"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── VIBECODING ─────────────────────────────── -->
+<section id="vibecoding" class="section vibe">
+  <div class="vibe-glow"></div>
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="eyebrow">My approach</span>
+      <h2 class="section-title">I vibe. I code. I ship.</h2>
+    </div>
+
+    <p class="vibe-lead reveal">
+      Vibecoding is building through intent — describing what you want in natural language
+      and letting AI handle the translation to working software. I pair human creativity
+      with AI precision to move faster, think bigger, and build better.
+    </p>
+
+    <div class="vibe-tools reveal">
+      <div class="vibe-tool">
+        <div class="vt-icon">🤖</div>
+        <h3>Claude</h3>
+        <p>Primary AI collaborator for architecture, code generation, and problem solving.</p>
+      </div>
+      <div class="vibe-tool">
+        <div class="vt-icon">⌨️</div>
+        <h3>Claude Code</h3>
+        <p>Terminal-native AI that understands full codebases and ships features end-to-end.</p>
+      </div>
+      <div class="vibe-tool">
+        <div class="vt-icon">🐙</div>
+        <h3>GitHub Copilot</h3>
+        <p>Inline completions that keep me in the flow state while I write.</p>
+      </div>
+      <div class="vibe-tool">
+        <div class="vt-icon">🎯</div>
+        <h3>Cursor</h3>
+        <p>AI-powered IDE that understands context and edits across entire files.</p>
+      </div>
+    </div>
+
+    <div class="vibe-chat reveal">
+      <div class="chat-window">
+        <div class="chat-header">
+          <span class="ch-dot"></span>
+          <span class="ch-title">Claude · vibecoding session</span>
+        </div>
+        <div class="chat-body">
+          <div class="chat-msg user">
+            <span class="chat-role">You</span>
+            <span class="chat-text">Build me a smart fuel station management system with real-time sensor data and cloud integration.</span>
+          </div>
+          <div class="chat-msg ai">
+            <span class="chat-role">Claude</span>
+            <span class="chat-text" id="chat-type"></span><span class="type-cursor small" id="chat-cursor">|</span>
+          </div>
+        </div>
+      </div>
+      <p class="vibe-caption">↑ That conversation produced the SMN project below. This website was built the same way.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROJECTS ──────────────────────────────── -->
+<section id="projects" class="section projects">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="eyebrow">Projects</span>
+      <h2 class="section-title">Things I've shipped</h2>
+    </div>
+
+    <div class="projects-grid">
+
+      <div class="proj-card reveal" style="--d:0s">
+        <div class="proj-img">
+          <img src="assets/projects/wine.jpg" alt="Wine Data Analysis" loading="lazy" />
+          <div class="proj-hover">
+            <button class="proj-view" onclick="openLightbox('assets/projects/wine.jpg','Wine Data Analysis')">View</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/winep.png','Wine Data Analysis – Detail')">Detail</button>
+          </div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-tags"><span>Python</span><span>SQL</span><span>Data Analysis</span></div>
+          <h3>Wine Data Analysis</h3>
+          <p>End-to-end pipeline analysing wine quality metrics with statistical modelling and visual reporting.</p>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="--d:0.1s">
+        <div class="proj-img">
+          <img src="assets/projects/SMN.png" alt="Smart Fuel Station" loading="lazy" />
+          <div class="proj-hover">
+            <button class="proj-view" onclick="openLightbox('assets/projects/SMN.png','Smart Fuel Station')">View</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/SMN-.png','Smart Fuel Station – Detail')">Detail</button>
+          </div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-tags"><span>IoT</span><span>Cloud</span><span>Real-time</span></div>
+          <h3>Smart Fuel Station (SMN)</h3>
+          <p>IoT-powered fuel management with real-time data processing and hybrid cloud architecture.</p>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="--d:0.2s">
+        <div class="proj-img">
+          <img src="assets/projects/FP.png" alt="FixPhone SQL DB" loading="lazy" />
+          <div class="proj-hover">
+            <button class="proj-view" onclick="openLightbox('assets/projects/FP.png','FixPhone SQL DB')">View</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/FP1.png','FixPhone SQL DB – Detail')">Detail</button>
+          </div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-tags"><span>SQL</span><span>Database</span><span>Backend</span></div>
+          <h3>FixPhone — SQL Repair DB</h3>
+          <p>Full-featured database system for phone repair shop management with inventory and job tracking.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox">
+  <div class="lb-bg" onclick="closeLightbox()"></div>
+  <div class="lb-content">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <img id="lb-img" src="" alt="" />
+    <p id="lb-caption"></p>
+  </div>
+</div>
+
+<!-- ─── CONTACT ──────────────────────────────── -->
+<section id="contact" class="section contact">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="eyebrow">Contact</span>
+      <h2 class="section-title">Let's build something</h2>
+    </div>
+    <p class="contact-lead reveal">
+      Open to internships, collaborations, and interesting problems. Reach out any time.
+    </p>
+
+    <div class="contact-grid reveal">
+      <a href="mailto:saeed.khoury10@gmail.com" class="contact-card">
+        <div class="cc-icon">✉</div>
+        <div class="cc-text">
+          <span class="cc-label">Email</span>
+          <span class="cc-value">saeed.khoury10@gmail.com</span>
+        </div>
+        <span class="cc-arrow">→</span>
+      </a>
+      <a href="https://www.linkedin.com/in/saed-khoury-a5a119359/" target="_blank" class="contact-card">
+        <div class="cc-icon cc-li">in</div>
+        <div class="cc-text">
+          <span class="cc-label">LinkedIn</span>
+          <span class="cc-value">saed-khoury</span>
+        </div>
+        <span class="cc-arrow">→</span>
+      </a>
+      <a href="https://github.com/saeedkhoury" target="_blank" class="contact-card">
+        <div class="cc-icon cc-gh">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </div>
+        <div class="cc-text">
+          <span class="cc-label">GitHub</span>
+          <span class="cc-value">saeedkhoury</span>
+        </div>
+        <span class="cc-arrow">→</span>
+      </a>
+      <a href="https://wa.me/972505854855" target="_blank" class="contact-card">
+        <div class="cc-icon">📱</div>
+        <div class="cc-text">
+          <span class="cc-label">WhatsApp</span>
+          <span class="cc-value">+972-50-585-4855</span>
+        </div>
+        <span class="cc-arrow">→</span>
+      </a>
+    </div>
+
+    <div class="contact-extra reveal">
+      <a href="https://www.instagram.com/saeed.khoury/" target="_blank">Instagram</a>
+      <a href="https://www.facebook.com/saed.khoury.73/" target="_blank">Facebook</a>
+    </div>
+  </div>
+</section>
+
+<!-- Social sidebar -->
+<aside class="social-sidebar">
+  <a href="https://www.linkedin.com/in/saed-khoury-a5a119359/" target="_blank" aria-label="LinkedIn">
+    <img src="assets/icons/IN.png" alt="LinkedIn" />
+  </a>
+  <a href="https://github.com/saeedkhoury" target="_blank" aria-label="GitHub">
+    <img src="assets/icons/GH.png" alt="GitHub" />
+  </a>
+  <a href="https://www.instagram.com/saeed.khoury/" target="_blank" aria-label="Instagram">
+    <img src="assets/icons/INST.png" alt="Instagram" />
+  </a>
+  <div class="sidebar-line"></div>
+</aside>
+
+<script src="script.js"></script>
+</body>
+</html>
