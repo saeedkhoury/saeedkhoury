@@ -224,20 +224,16 @@ body {
 
 /* ── Portrait ─────────────────────────────────────────────────── */
 .hero-portrait {
-  position: relative;
+  display: block;
   height: 88vh;
   max-height: 820px;
   width: auto;
-  object-fit: contain;
-  object-position: center bottom;
-  display: block;
   will-change: transform;
-  /* JS owns transform; CSS only fades opacity on load */
+  /* ONLY opacity animated — JS owns transform 100% */
   animation: portrait-fadein 0.9s ease both;
-  filter: drop-shadow(0 0 40px rgba(124,58,237,0.18))
-          drop-shadow(0 0 80px rgba(34,211,238,0.08));
+  filter: drop-shadow(0 0 50px rgba(124,58,237,0.22))
+          drop-shadow(0 0 100px rgba(34,211,238,0.10));
 }
-
 @keyframes portrait-fadein {
   from { opacity: 0; }
   to   { opacity: 1; }
