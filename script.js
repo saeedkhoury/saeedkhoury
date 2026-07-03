@@ -1,7 +1,11 @@
 /* ─── Canvas Particles ─────────────────────────────────────────── */
 (function () {
-  var isMobile = window.innerWidth < 768;
+  var isMobile = ('ontouchstart' in window) || window.innerWidth < 768;
   var canvas = document.getElementById('bg-canvas');
+
+  /* On mobile just hide canvas — saves an entire RAF loop */
+  if (isMobile) { canvas.style.display = 'none'; return; }
+
   var ctx = canvas.getContext('2d');
   var particles = [];
   var mouse = { x: null, y: null, radius: 120 };
@@ -9,7 +13,6 @@
   function resize() {
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
-    isMobile = window.innerWidth < 768;
   }
   resize();
   window.addEventListener('resize', function () { resize(); initParticles(); });
@@ -92,36 +95,43 @@
   loop();
 })();
 
-/* ─── Portrait 3-D mouse-follow ────────────────────────────────── */
+/* ─── Portrait 3-D tracking ─────────────────────────────────────── */
 (function () {
+  var isMobile = ('ontouchstart' in window) || window.innerWidth < 768;
   var img = document.getElementById('hero-portrait');
   if (!img) return;
 
   var tx = 0, ty = 0, cx = 0, cy = 0;
-  var glowLive = false;
-  setTimeout(function () { glowLive = true; }, 1000);
 
-  /* Tuning — crank these up for more drama */
-  var PERSP = 800;   // px  — lower = more fisheye 3-D
-  var TILT_Y = 20;   // deg — side tilt (left/right)
-  var TILT_X = 12;   // deg — nod (up/down)
-  var MOVE_X = 70;   // px  — horizontal slide
-  var MOVE_Y = 35;   // px  — vertical slide
+  var PERSP  = 800;
+  var TILT_Y = 20;
+  var TILT_X = 12;
+  var MOVE_X = isMobile ? 18 : 70;
+  var MOVE_Y = isMobile ? 8  : 35;
+  var LERP   = isMobile ? 0.04 : 0.08;  /* slower on mobile = smoother */
 
-  window.addEventListener('mousemove', function (e) {
-    tx = (e.clientX / window.innerWidth  - 0.5) * 2;  /* -1 … +1 */
-    ty = (e.clientY / window.innerHeight - 0.5) * 2;
-  });
+  /* Desktop: follow mouse */
+  if (!isMobile) {
+    window.addEventListener('mousemove', function (e) {
+      tx = (e.clientX / window.innerWidth  - 0.5) * 2;
+      ty = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+  }
 
+  /* Mobile: follow device tilt (passive = no scroll jank) */
   window.addEventListener('deviceorientation', function (e) {
     if (e.gamma == null) return;
     tx = Math.max(-1, Math.min(1, e.gamma / 40));
     ty = Math.max(-1, Math.min(1, (e.beta - 45) / 40));
-  });
+  }, { passive: true });
+
+  /* Desktop only: dynamic glow update */
+  var glowLive = false;
+  if (!isMobile) setTimeout(function () { glowLive = true; }, 1000);
 
   function tick() {
-    cx += (tx - cx) * 0.08;
-    cy += (ty - cy) * 0.08;
+    cx += (tx - cx) * LERP;
+    cy += (ty - cy) * LERP;
 
     img.style.transform =
       'perspective(' + PERSP + 'px)' +
@@ -129,16 +139,13 @@
       ' rotateX(' + (-cy * TILT_X).toFixed(2) + 'deg)' +
       ' translate(' + (cx * MOVE_X).toFixed(2) + 'px,' + (cy * MOVE_Y).toFixed(2) + 'px)';
 
-    /* Dynamic glow grows as portrait tilts further */
     if (glowLive) {
       var d   = Math.sqrt(cx * cx + cy * cy);
-      var v   = (0.20 + d * 0.40).toFixed(2);
-      var c   = (0.07 + d * 0.15).toFixed(2);
       var vpx = Math.round(50 + d * 60);
       var cpx = Math.round(100 + d * 80);
       img.style.filter =
-        'drop-shadow(0 0 ' + vpx + 'px rgba(124,58,237,' + v + '))' +
-        ' drop-shadow(0 0 ' + cpx + 'px rgba(34,211,238,' + c + '))' +
+        'drop-shadow(0 0 ' + vpx + 'px rgba(124,58,237,' + (0.20 + d * 0.40).toFixed(2) + '))' +
+        ' drop-shadow(0 0 ' + cpx + 'px rgba(34,211,238,' + (0.07 + d * 0.15).toFixed(2) + '))' +
         ' drop-shadow(0 0 200px rgba(124,58,237,0.06))';
     }
 
