@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saeed Khoury — Software Engineer & Vibecoder</title>
+  <title>Saeed Khoury — Software Engineer &amp; Vibecoder</title>
   <meta name="description" content="Saeed Khoury — Software Engineering student building real-world solutions with code and AI." />
   <!-- Preload hero portrait so it appears instantly -->
   <link rel="preload" as="image" href="assets/saeed-nobg.webp" type="image/webp">
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
 
-<!-- Particle canvas -->  
+<!-- Particle canvas -->
 <canvas id="bg-canvas"></canvas>
 
 <!-- Navigation -->
@@ -21,13 +21,14 @@
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-menu" id="nav-menu">
-    <li><a href="#home"        class="nav-link">Home</a></li>
-    <li><a href="#about"       class="nav-link">About</a></li>
-    <li><a href="#vibecoding"  class="nav-link">Vibecoding</a></li>
-    <li><a href="#projects"    class="nav-link">Projects</a></li>
-    <li><a href="#contact"     class="nav-link">Contact</a></li>
+    <li><a href="#home"        class="nav-link" data-i18n="nav.home">Home</a></li>
+    <li><a href="#about"       class="nav-link" data-i18n="nav.about">About</a></li>
+    <li><a href="#vibecoding"  class="nav-link" data-i18n="nav.vibecoding">Vibecoding</a></li>
+    <li><a href="#projects"    class="nav-link" data-i18n="nav.projects">Projects</a></li>
+    <li><a href="#contact"     class="nav-link" data-i18n="nav.contact">Contact</a></li>
   </ul>
-  <a href="assets/cv/CV.pdf" download class="btn btn-sm nav-cv">Resume</a>
+  <button class="lang-toggle" id="lang-toggle" aria-label="Toggle language">עב</button>
+  <a href="assets/cv/CV.pdf" download class="btn btn-sm nav-cv" data-i18n="nav.resume">Resume</a>
 </nav>
 
 <!-- ─── HERO ─────────────────────────────────── -->
@@ -59,15 +60,15 @@
   <div class="section-inner intro-inner">
     <div class="intro-badge">
       <span class="badge-dot"></span>
-      Open to internships &amp; collaborations
+      <span data-i18n="intro.badge">Open to internships &amp; collaborations</span>
     </div>
-    <p class="intro-bio">
+    <p class="intro-bio" data-i18n="intro.bio">
       Third-year Software Engineering student building real-world solutions —
       with code, curiosity, and a little AI magic.
     </p>
     <div class="hero-cta">
-      <a href="assets/cv/CV.pdf" target="_blank" class="btn btn-primary">View Resume</a>
-      <a href="#projects" class="btn btn-ghost">See Projects ↓</a>
+      <a href="assets/cv/CV.pdf" target="_blank" class="btn btn-primary" data-i18n="intro.cta.resume">View Resume</a>
+      <a href="#projects" class="btn btn-ghost" data-i18n="intro.cta.projects">See Projects ↓</a>
     </div>
   </div>
 </section>
@@ -76,24 +77,24 @@
 <section id="about" class="section about">
   <div class="section-inner">
     <div class="section-header">
-      <span class="eyebrow">About me</span>
-      <h2 class="section-title">The person behind the prompt</h2>
+      <span class="eyebrow" data-i18n="about.eyebrow">About me</span>
+      <h2 class="section-title" data-i18n="about.title">The person behind the prompt</h2>
     </div>
 
     <div class="about-grid">
       <div class="about-text reveal">
-        <p>
+        <p data-i18n-html="about.p1">
           I'm a <strong>highly motivated third-year Software Engineering student</strong>
           with hands-on experience in C, Java, Python, Assembly, and SQL — backed by
           a strong foundation in algorithms, data structures, and system-level programming.
         </p>
-        <p>
+        <p data-i18n-html="about.p2">
           My coursework spans <strong>Database Management Systems</strong>, OOP,
           Software-Intensive Systems Engineering, and full-stack development.
           I've also completed a comprehensive <strong>Quality Assurance</strong> course
           covering manual testing and test-case design.
         </p>
-        <p>
+        <p data-i18n-html="about.p3">
           I explore IoT systems, hybrid cloud infrastructure, and real-time data
           processing — and I bring a solution-oriented mindset to every project I touch.
         </p>
@@ -124,11 +125,11 @@
   <div class="vibe-glow"></div>
   <div class="section-inner">
     <div class="section-header">
-      <span class="eyebrow">My approach</span>
-      <h2 class="section-title">I vibe. I code. I ship.</h2>
+      <span class="eyebrow" data-i18n="vibe.eyebrow">My approach</span>
+      <h2 class="section-title" data-i18n="vibe.title">I vibe. I code. I ship.</h2>
     </div>
 
-    <p class="vibe-lead reveal">
+    <p class="vibe-lead reveal" data-i18n="vibe.lead">
       Vibecoding is building through intent — describing what you want in natural language
       and letting AI handle the translation to working software. I use the full AI stack
       to build apps and websites faster, ship more, and think bigger.
@@ -138,32 +139,32 @@
       <div class="vibe-tool">
         <div class="vt-icon">🤖</div>
         <h3>Claude &amp; Claude Code</h3>
-        <p>Primary AI partner for architecture, full-codebase edits, and shipping features end-to-end from the terminal.</p>
+        <p data-i18n="vibe.tool1.desc">Primary AI partner for architecture, full-codebase edits, and shipping features end-to-end from the terminal.</p>
       </div>
       <div class="vibe-tool">
         <div class="vt-icon">⚡</div>
         <h3>OpenAI Codex</h3>
-        <p>Code generation and reasoning for complex algorithms, API integrations, and rapid prototyping.</p>
+        <p data-i18n="vibe.tool2.desc">Code generation and reasoning for complex algorithms, API integrations, and rapid prototyping.</p>
       </div>
       <div class="vibe-tool">
         <div class="vt-icon">💜</div>
         <h3>Lovable</h3>
-        <p>Full-stack app builder — describe a product idea, get a deployable web app in minutes.</p>
+        <p data-i18n="vibe.tool3.desc">Full-stack app builder — describe a product idea, get a deployable web app in minutes.</p>
       </div>
       <div class="vibe-tool">
         <div class="vt-icon">🎯</div>
         <h3>Cursor &amp; Copilot</h3>
-        <p>AI-powered IDE with whole-file context edits and inline completions that keep me in flow.</p>
+        <p data-i18n="vibe.tool4.desc">AI-powered IDE with whole-file context edits and inline completions that keep me in flow.</p>
       </div>
       <div class="vibe-tool">
         <div class="vt-icon">🌊</div>
         <h3>Bolt &amp; v0</h3>
-        <p>Component and UI generation — turn a prompt into a production-ready React interface instantly.</p>
+        <p data-i18n="vibe.tool5.desc">Component and UI generation — turn a prompt into a production-ready React interface instantly.</p>
       </div>
       <div class="vibe-tool">
         <div class="vt-icon">🧠</div>
         <h3>Gemini &amp; Grok</h3>
-        <p>Multi-modal reasoning and research — cross-checking solutions and exploring new problem spaces.</p>
+        <p data-i18n="vibe.tool6.desc">Multi-modal reasoning and research — cross-checking solutions and exploring new problem spaces.</p>
       </div>
     </div>
 
@@ -184,7 +185,7 @@
           </div>
         </div>
       </div>
-      <p class="vibe-caption">↑ That conversation produced the SMN project below. This website was built the same way.</p>
+      <p class="vibe-caption" data-i18n="vibe.caption">↑ That conversation produced the SMN project below. This website was built the same way.</p>
     </div>
   </div>
 </section>
@@ -193,8 +194,8 @@
 <section id="projects" class="section projects">
   <div class="section-inner">
     <div class="section-header">
-      <span class="eyebrow">Projects</span>
-      <h2 class="section-title">Things I've shipped</h2>
+      <span class="eyebrow" data-i18n="projects.eyebrow">Projects</span>
+      <h2 class="section-title" data-i18n="projects.title">Things I've shipped</h2>
     </div>
 
     <div class="projects-grid">
@@ -212,8 +213,8 @@
         </div>
         <div class="proj-body">
           <div class="proj-tags"><span>Python</span><span>SQL</span><span>Data Analysis</span></div>
-          <h3>Wine Data Analysis</h3>
-          <p>End-to-end pipeline analysing wine quality metrics with statistical modelling and visual reporting.</p>
+          <h3 data-i18n="proj1.title">Wine Data Analysis</h3>
+          <p data-i18n="proj1.desc">End-to-end pipeline analysing wine quality metrics with statistical modelling and visual reporting.</p>
         </div>
       </div>
 
@@ -230,8 +231,8 @@
         </div>
         <div class="proj-body">
           <div class="proj-tags"><span>IoT</span><span>Cloud</span><span>Real-time</span></div>
-          <h3>Smart Fuel Station (SMN)</h3>
-          <p>IoT-powered fuel management with real-time data processing and hybrid cloud architecture.</p>
+          <h3 data-i18n="proj2.title">Smart Fuel Station (SMN)</h3>
+          <p data-i18n="proj2.desc">IoT-powered fuel management with real-time data processing and hybrid cloud architecture.</p>
         </div>
       </div>
 
@@ -248,8 +249,8 @@
         </div>
         <div class="proj-body">
           <div class="proj-tags"><span>SQL</span><span>Database</span><span>Backend</span></div>
-          <h3>FixPhone — SQL Repair DB</h3>
-          <p>Full-featured database system for phone repair shop management with inventory and job tracking.</p>
+          <h3 data-i18n="proj3.title">FixPhone — SQL Repair DB</h3>
+          <p data-i18n="proj3.desc">Full-featured database system for phone repair shop management with inventory and job tracking.</p>
         </div>
       </div>
 
@@ -271,10 +272,10 @@
 <section id="contact" class="section contact">
   <div class="section-inner">
     <div class="section-header">
-      <span class="eyebrow">Contact</span>
-      <h2 class="section-title">Let's build something</h2>
+      <span class="eyebrow" data-i18n="contact.eyebrow">Contact</span>
+      <h2 class="section-title" data-i18n="contact.title">Let's build something</h2>
     </div>
-    <p class="contact-lead reveal">
+    <p class="contact-lead reveal" data-i18n="contact.lead">
       Open to internships, collaborations, and interesting problems. Reach out any time.
     </p>
 
@@ -282,18 +283,18 @@
       <a href="mailto:saeed.khoury10@gmail.com" class="contact-card">
         <div class="cc-icon">✉</div>
         <div class="cc-text">
-          <span class="cc-label">Email</span>
+          <span class="cc-label" data-i18n="contact.email.label">Email</span>
           <span class="cc-value">saeed.khoury10@gmail.com</span>
         </div>
-        <span class="cc-arrow">→</span>
+        <span class="cc-arrow" data-i18n="contact.arrow">→</span>
       </a>
       <a href="https://www.linkedin.com/in/saed-khoury-a5a119359/" target="_blank" class="contact-card">
         <div class="cc-icon cc-li">in</div>
         <div class="cc-text">
-          <span class="cc-label">LinkedIn</span>
+          <span class="cc-label" data-i18n="contact.linkedin.label">LinkedIn</span>
           <span class="cc-value">saed-khoury</span>
         </div>
-        <span class="cc-arrow">→</span>
+        <span class="cc-arrow" data-i18n="contact.arrow">→</span>
       </a>
       <a href="https://github.com/saeedkhoury" target="_blank" class="contact-card">
         <div class="cc-icon cc-gh">
@@ -302,18 +303,18 @@
           </svg>
         </div>
         <div class="cc-text">
-          <span class="cc-label">GitHub</span>
+          <span class="cc-label" data-i18n="contact.github.label">GitHub</span>
           <span class="cc-value">saeedkhoury</span>
         </div>
-        <span class="cc-arrow">→</span>
+        <span class="cc-arrow" data-i18n="contact.arrow">→</span>
       </a>
       <a href="https://wa.me/972505854855" target="_blank" class="contact-card">
         <div class="cc-icon">📱</div>
         <div class="cc-text">
-          <span class="cc-label">WhatsApp</span>
+          <span class="cc-label" data-i18n="contact.whatsapp.label">WhatsApp</span>
           <span class="cc-value">+972-50-585-4855</span>
         </div>
-        <span class="cc-arrow">→</span>
+        <span class="cc-arrow" data-i18n="contact.arrow">→</span>
       </a>
     </div>
 
@@ -338,6 +339,6 @@
   <div class="sidebar-line"></div>
 </aside>
 
-<script src="script.js?v=4"></script>
+<script src="script.js?v=5"></script>
 </body>
 </html>

@@ -1,3 +1,123 @@
+/* ─── i18n: language data and switcher ─────────────────────────── */
+var currentLang = (function() {
+  try { return localStorage.getItem('lang') || 'en'; } catch(e) { return 'en'; }
+})();
+
+var typewriterPhrases = {
+  en: ['Software Engineer', 'Vibecoder', 'AI-Powered Builder', 'CS Student', 'Problem Solver'],
+  he: ['מהנדס תוכנה', 'ויבקודר', 'בונה מונע AI', 'סטודנט למדמ"ח', 'פותר בעיות']
+};
+
+var translations = {
+  en: {
+    'nav.home': 'Home',
+    'nav.about': 'About',
+    'nav.vibecoding': 'Vibecoding',
+    'nav.projects': 'Projects',
+    'nav.contact': 'Contact',
+    'nav.resume': 'Resume',
+    'intro.badge': 'Open to internships & collaborations',
+    'intro.bio': 'Third-year Software Engineering student building real-world solutions — with code, curiosity, and a little AI magic.',
+    'intro.cta.resume': 'View Resume',
+    'intro.cta.projects': 'See Projects ↓',
+    'about.eyebrow': 'About me',
+    'about.title': 'The person behind the prompt',
+    'about.p1': "I'm a <strong>highly motivated third-year Software Engineering student</strong> with hands-on experience in C, Java, Python, Assembly, and SQL — backed by a strong foundation in algorithms, data structures, and system-level programming.",
+    'about.p2': "My coursework spans <strong>Database Management Systems</strong>, OOP, Software-Intensive Systems Engineering, and full-stack development. I've also completed a comprehensive <strong>Quality Assurance</strong> course covering manual testing and test-case design.",
+    'about.p3': 'I explore IoT systems, hybrid cloud infrastructure, and real-time data processing — and I bring a solution-oriented mindset to every project I touch.',
+    'vibe.eyebrow': 'My approach',
+    'vibe.title': 'I vibe. I code. I ship.',
+    'vibe.lead': 'Vibecoding is building through intent — describing what you want in natural language and letting AI handle the translation to working software. I use the full AI stack to build apps and websites faster, ship more, and think bigger.',
+    'vibe.tool1.desc': 'Primary AI partner for architecture, full-codebase edits, and shipping features end-to-end from the terminal.',
+    'vibe.tool2.desc': 'Code generation and reasoning for complex algorithms, API integrations, and rapid prototyping.',
+    'vibe.tool3.desc': 'Full-stack app builder — describe a product idea, get a deployable web app in minutes.',
+    'vibe.tool4.desc': 'AI-powered IDE with whole-file context edits and inline completions that keep me in flow.',
+    'vibe.tool5.desc': 'Component and UI generation — turn a prompt into a production-ready React interface instantly.',
+    'vibe.tool6.desc': 'Multi-modal reasoning and research — cross-checking solutions and exploring new problem spaces.',
+    'vibe.caption': '↑ That conversation produced the SMN project below. This website was built the same way.',
+    'projects.eyebrow': 'Projects',
+    'projects.title': "Things I've shipped",
+    'proj1.title': 'Wine Data Analysis',
+    'proj1.desc': 'End-to-end pipeline analysing wine quality metrics with statistical modelling and visual reporting.',
+    'proj2.title': 'Smart Fuel Station (SMN)',
+    'proj2.desc': 'IoT-powered fuel management with real-time data processing and hybrid cloud architecture.',
+    'proj3.title': 'FixPhone — SQL Repair DB',
+    'proj3.desc': 'Full-featured database system for phone repair shop management with inventory and job tracking.',
+    'contact.eyebrow': 'Contact',
+    'contact.title': "Let's build something",
+    'contact.lead': 'Open to internships, collaborations, and interesting problems. Reach out any time.',
+    'contact.email.label': 'Email',
+    'contact.linkedin.label': 'LinkedIn',
+    'contact.github.label': 'GitHub',
+    'contact.whatsapp.label': 'WhatsApp',
+    'contact.arrow': '→'
+  },
+  he: {
+    'nav.home': 'דף הבית',
+    'nav.about': 'אודות',
+    'nav.vibecoding': 'ויבקודינג',
+    'nav.projects': 'פרויקטים',
+    'nav.contact': 'צור קשר',
+    'nav.resume': 'קורות חיים',
+    'intro.badge': 'פתוח להתמחויות ושיתופי פעולה',
+    'intro.bio': 'סטודנט בשנה השלישית להנדסת תוכנה שבונה פתרונות לעולם האמיתי — עם קוד, סקרנות, וקצת קסם AI.',
+    'intro.cta.resume': 'צפה בקורות חיים',
+    'intro.cta.projects': 'ראה פרויקטים ↓',
+    'about.eyebrow': 'אודותי',
+    'about.title': 'האדם מאחורי הפרומפט',
+    'about.p1': 'אני סטודנט בשנה השלישית להנדסת תוכנה עם ניסיון מעשי ב-C, Java, Python, Assembly ו-SQL — עם בסיס חזק באלגוריתמים, מבני נתונים ותכנות ברמת מערכת.',
+    'about.p2': 'הקורסים שלי כוללים מערכות ניהול מסדי נתונים, תכנות מונחה עצמים, הנדסת מערכות תוכנה-אינטנסיביות ופיתוח Full-Stack. השלמתי גם קורס מקיף בבטחת איכות הכולל בדיקות ידניות ועיצוב מקרי בדיקה.',
+    'about.p3': 'אני חוקר מערכות IoT, תשתית ענן היברידית ועיבוד נתונים בזמן אמת — ומביא גישה מוכוונת פתרונות לכל פרויקט שאני נוגע בו.',
+    'vibe.eyebrow': 'הגישה שלי',
+    'vibe.title': 'מרגיש. מקודד. שולח.',
+    'vibe.lead': 'ויבקודינג הוא בנייה דרך כוונה — לתאר מה שרוצים בשפה טבעית ולתת ל-AI לטפל בתרגום לתוכנה עובדת. אני משתמש בסטאק ה-AI המלא כדי לבנות אפליקציות ואתרים מהר יותר, לשלוח יותר ולחשוב גדול יותר.',
+    'vibe.tool1.desc': "שותף ה-AI הראשי לארכיטקטורה, עריכת קוד בסיס שלם ושליחת פיצ'רים מקצה לקצה מהטרמינל.",
+    'vibe.tool2.desc': 'יצירת קוד ולוגיקה לאלגוריתמים מורכבים, אינטגרציות API ופרוטוטייפינג מהיר.',
+    'vibe.tool3.desc': 'בונה אפליקציות Full-Stack — תאר רעיון מוצר, קבל אפליקציית ווב מוכנה לפריסה תוך דקות.',
+    'vibe.tool4.desc': 'סביבת פיתוח מונעת AI עם עריכות בהקשר קובץ שלם והשלמות inline שמשמרות את הזרימה.',
+    'vibe.tool5.desc': 'יצירת קומפוננטות ו-UI — הפוך פרומפט לממשק React מוכן לייצור תוך רגע.',
+    'vibe.tool6.desc': 'לוגיקה מולטי-מודאלית ומחקר — בדיקה צולבת של פתרונות וחקירת מרחבי בעיות חדשים.',
+    'vibe.caption': '↑ השיחה הזו הפיקה את פרויקט SMN למטה. האתר הזה נבנה באותה דרך.',
+    'projects.eyebrow': 'פרויקטים',
+    'projects.title': 'דברים ששלחתי',
+    'proj1.title': 'ניתוח נתוני יין',
+    'proj1.desc': 'Pipeline מקצה לקצה לניתוח מדדי איכות יין עם מודלים סטטיסטיים ודיווח ויזואלי.',
+    'proj2.title': 'תחנת דלק חכמה (SMN)',
+    'proj2.desc': 'ניהול דלק מונע IoT עם עיבוד נתונים בזמן אמת וארכיטקטורת ענן היברידית.',
+    'proj3.title': 'FixPhone — מסד נתוני תיקונים',
+    'proj3.desc': 'מערכת מסד נתונים מלאה לניהול חנות תיקוני טלפונים עם ניהול מלאי ומעקב עבודות.',
+    'contact.eyebrow': 'צור קשר',
+    'contact.title': 'בואו נבנה משהו',
+    'contact.lead': 'פתוח להתמחויות, שיתופי פעולה ובעיות מעניינות. צור קשר בכל עת.',
+    'contact.email.label': 'אימייל',
+    'contact.linkedin.label': 'לינקדאין',
+    'contact.github.label': 'גיטהאב',
+    'contact.whatsapp.label': 'וואטסאפ',
+    'contact.arrow': '←'
+  }
+};
+
+function setLang(lang) {
+  var isHe = lang === 'he';
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = isHe ? 'rtl' : 'ltr';
+
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (translations[lang][key] !== undefined) el.textContent = translations[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-html');
+    if (translations[lang][key] !== undefined) el.innerHTML = translations[lang][key];
+  });
+
+  var btn = document.getElementById('lang-toggle');
+  if (btn) btn.textContent = isHe ? 'EN' : 'עב';
+
+  try { localStorage.setItem('lang', lang); } catch(e) {}
+}
+
 /* ─── Canvas Particles ─────────────────────────────────────────── */
 (function () {
   var isMobile = ('ontouchstart' in window) || window.innerWidth < 768;
@@ -197,20 +317,14 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
 /* ─── Hero typewriter ──────────────────────────────────────────── */
 (function () {
-  const phrases = [
-    'Software Engineer',
-    'Vibecoder',
-    'AI-Powered Builder',
-    'CS Student',
-    'Problem Solver',
-  ];
   const el = document.getElementById('typewriter');
   if (!el) return;
   let pi = 0, ci = 0, deleting = false;
   const speed = { type: 80, delete: 40, pause: 1800 };
 
   function tick() {
-    const phrase = phrases[pi];
+    const phrases = typewriterPhrases[currentLang] || typewriterPhrases.en;
+    const phrase = phrases[pi % phrases.length];
     if (!deleting) {
       el.textContent = phrase.slice(0, ++ci);
       if (ci === phrase.length) { deleting = true; setTimeout(tick, speed.pause); return; }
@@ -333,3 +447,11 @@ function closeLightbox() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeLightbox();
 });
+
+/* ─── Language toggle ──────────────────────────────────────────── */
+document.getElementById('lang-toggle').addEventListener('click', function() {
+  setLang(currentLang === 'en' ? 'he' : 'en');
+});
+
+/* Apply stored language preference on load */
+if (currentLang === 'he') setLang('he');
