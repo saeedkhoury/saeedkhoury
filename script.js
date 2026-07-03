@@ -1,44 +1,43 @@
 /* ─── Canvas Particles ─────────────────────────────────────────── */
 (function () {
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  let mouse = { x: null, y: null, radius: 140 };
-  let raf;
+  var isMobile = window.innerWidth < 768;
+  var canvas = document.getElementById('bg-canvas');
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var mouse = { x: null, y: null, radius: 120 };
 
   function resize() {
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
+    isMobile = window.innerWidth < 768;
   }
   resize();
-  window.addEventListener('resize', () => { resize(); initParticles(); });
+  window.addEventListener('resize', function () { resize(); initParticles(); });
 
-  window.addEventListener('mousemove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
+  /* No mouse-repulsion on mobile (no mouse) */
+  window.addEventListener('mousemove', function (e) {
+    mouse.x = e.clientX; mouse.y = e.clientY;
   });
-  window.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+  window.addEventListener('mouseleave', function () { mouse.x = null; mouse.y = null; });
 
   function Particle() {
     this.x  = Math.random() * canvas.width;
     this.y  = Math.random() * canvas.height;
-    this.vx = (Math.random() - 0.5) * 0.4;
-    this.vy = (Math.random() - 0.5) * 0.4;
+    this.vx = (Math.random() - 0.5) * (isMobile ? 0.25 : 0.4);
+    this.vy = (Math.random() - 0.5) * (isMobile ? 0.25 : 0.4);
     this.r  = Math.random() * 1.5 + 0.5;
-    this.a  = Math.random() * 0.35 + 0.05;
+    this.a  = Math.random() * 0.3 + 0.05;
   }
   Particle.prototype.update = function () {
     this.x += this.vx;
     this.y += this.vy;
     if (this.x < 0 || this.x > canvas.width)  this.vx *= -1;
     if (this.y < 0 || this.y > canvas.height)  this.vy *= -1;
-
-    if (mouse.x !== null) {
-      const dx = this.x - mouse.x;
-      const dy = this.y - mouse.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < mouse.radius) {
-        const force = (mouse.radius - dist) / mouse.radius;
+    if (!isMobile && mouse.x !== null) {
+      var dx = this.x - mouse.x, dy = this.y - mouse.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < mouse.radius && dist > 0) {
+        var force = (mouse.radius - dist) / mouse.radius;
         this.x += dx / dist * force * 1.2;
         this.y += dy / dist * force * 1.2;
       }
@@ -47,28 +46,32 @@
   Particle.prototype.draw = function () {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(124,58,237,${this.a})`;
+    ctx.fillStyle = 'rgba(124,58,237,' + this.a + ')';
     ctx.fill();
   };
 
   function initParticles() {
-    const count = Math.min(Math.floor((canvas.width * canvas.height) / 14000), 90);
-    particles = Array.from({ length: count }, () => new Particle());
+    /* Mobile: max 25 particles, no connections; desktop: up to 80 */
+    var area  = canvas.width * canvas.height;
+    var count = isMobile
+      ? Math.min(Math.floor(area / 28000), 25)
+      : Math.min(Math.floor(area / 14000), 80);
+    particles = [];
+    for (var i = 0; i < count; i++) particles.push(new Particle());
   }
   initParticles();
 
   function connect() {
-    const maxDist = 130;
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const d  = Math.sqrt(dx * dx + dy * dy);
+    var maxDist = 120;
+    for (var i = 0; i < particles.length; i++) {
+      for (var j = i + 1; j < particles.length; j++) {
+        var dx = particles[i].x - particles[j].x;
+        var dy = particles[i].y - particles[j].y;
+        var d  = Math.sqrt(dx * dx + dy * dy);
         if (d < maxDist) {
-          const alpha = (1 - d / maxDist) * 0.12;
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(124,58,237,${alpha})`;
-          ctx.lineWidth = 0.6;
+          ctx.strokeStyle = 'rgba(124,58,237,' + ((1 - d / maxDist) * 0.1) + ')';
+          ctx.lineWidth = 0.5;
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
           ctx.stroke();
@@ -79,9 +82,12 @@
 
   function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => { p.update(); p.draw(); });
-    connect();
-    raf = requestAnimationFrame(loop);
+    for (var i = 0; i < particles.length; i++) {
+      particles[i].update();
+      particles[i].draw();
+    }
+    if (!isMobile) connect(); /* skip expensive O(n²) on mobile */
+    requestAnimationFrame(loop);
   }
   loop();
 })();

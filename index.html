@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Saeed Khoury — Software Engineer & Vibecoder</title>
   <meta name="description" content="Saeed Khoury — Software Engineering student building real-world solutions with code and AI." />
+  <!-- Preload hero portrait so it appears instantly -->
+  <link rel="preload" as="image" href="assets/saeed-nobg.webp" type="image/webp">
+  <!-- Fonts: preconnect + non-blocking load -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap"></noscript>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -36,7 +40,10 @@
 
   <div class="hero-portrait-wrap" id="portrait-wrap">
     <div class="portrait-glow"></div>
-    <img src="assets/saeed-nobg.png" class="hero-portrait" id="hero-portrait" alt="Saeed Khoury" />
+    <picture>
+      <source srcset="assets/saeed-nobg.webp" type="image/webp">
+      <img src="assets/saeed-nobg.png" class="hero-portrait" id="hero-portrait" alt="Saeed Khoury" fetchpriority="high">
+    </picture>
   </div>
 
   <!-- Name: bottom center, one line -->
@@ -189,10 +196,13 @@
 
       <div class="proj-card reveal" style="--d:0s">
         <div class="proj-img">
-          <img src="assets/projects/wine.jpg" alt="Wine Data Analysis" loading="lazy" />
+          <picture>
+            <source srcset="assets/projects/wine.webp" type="image/webp">
+            <img src="assets/projects/wine.jpg" alt="Wine Data Analysis" loading="lazy">
+          </picture>
           <div class="proj-hover">
-            <button class="proj-view" onclick="openLightbox('assets/projects/wine.jpg','Wine Data Analysis')">View</button>
-            <button class="proj-view" onclick="openLightbox('assets/projects/winep.png','Wine Data Analysis – Detail')">Detail</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/wine.webp','Wine Data Analysis')">View</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/winep.webp','Wine Data Analysis – Detail')">Detail</button>
           </div>
         </div>
         <div class="proj-body">
@@ -204,10 +214,13 @@
 
       <div class="proj-card reveal" style="--d:0.1s">
         <div class="proj-img">
-          <img src="assets/projects/SMN.png" alt="Smart Fuel Station" loading="lazy" />
+          <picture>
+            <source srcset="assets/projects/SMN.webp" type="image/webp">
+            <img src="assets/projects/SMN.png" alt="Smart Fuel Station" loading="lazy">
+          </picture>
           <div class="proj-hover">
-            <button class="proj-view" onclick="openLightbox('assets/projects/SMN.png','Smart Fuel Station')">View</button>
-            <button class="proj-view" onclick="openLightbox('assets/projects/SMN-.png','Smart Fuel Station – Detail')">Detail</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/SMN.webp','Smart Fuel Station')">View</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/SMN-.webp','Smart Fuel Station – Detail')">Detail</button>
           </div>
         </div>
         <div class="proj-body">
@@ -219,10 +232,13 @@
 
       <div class="proj-card reveal" style="--d:0.2s">
         <div class="proj-img">
-          <img src="assets/projects/FP.png" alt="FixPhone SQL DB" loading="lazy" />
+          <picture>
+            <source srcset="assets/projects/FP.webp" type="image/webp">
+            <img src="assets/projects/FP.png" alt="FixPhone SQL DB" loading="lazy">
+          </picture>
           <div class="proj-hover">
-            <button class="proj-view" onclick="openLightbox('assets/projects/FP.png','FixPhone SQL DB')">View</button>
-            <button class="proj-view" onclick="openLightbox('assets/projects/FP1.png','FixPhone SQL DB – Detail')">Detail</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/FP.webp','FixPhone SQL DB')">View</button>
+            <button class="proj-view" onclick="openLightbox('assets/projects/FP1.webp','FixPhone SQL DB – Detail')">Detail</button>
           </div>
         </div>
         <div class="proj-body">
