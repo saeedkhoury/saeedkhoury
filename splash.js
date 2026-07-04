@@ -1,17 +1,16 @@
 /* ─────────────────────────────────────────────────────────────────────────── *
- *  Cinematic Splash — Saeed Khoury Portfolio                                  *
- *  "Saeed Khoury" fires from infinite distance, crashes into the screen,       *
- *  shatters it into two halves that slide apart, revealing the site.           *
- *  Total runtime: ~2.5 s.                                                      *
+ *  Cinematic Splash v2 — Saeed Khoury Portfolio                               *
+ *  Name flies sharp from infinite distance → slams into screen →              *
+ *  screen shatters → name freezes on cracked glass →                          *
+ *  two halves blast open revealing the site.  Total: ~3.2 s                   *
  * ─────────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
 
-  /* Run once per browser session */
   if (sessionStorage.getItem('sk-intro')) return;
   sessionStorage.setItem('sk-intro', '1');
 
-  /* ── Brand constants ──────────────────────────────────────────────────────── */
+  /* ── Constants ───────────────────────────────────────────────────────────── */
   var BG     = '#07070d';
   var ACCENT = '#7c3aed';
   var CYAN   = '#22d3ee';
@@ -19,34 +18,41 @@
   var H  = window.innerHeight;
   var CX = W / 2;
   var CY = H / 2;
+  var FS = Math.min(W * 0.095, 88); /* font size px */
 
-  /* ── Prevent page scroll during animation ────────────────────────────────── */
   document.body.style.overflow = 'hidden';
 
-  /* ── Inject keyframes ────────────────────────────────────────────────────── */
+  /* ── CSS keyframes ───────────────────────────────────────────────────────── */
   var kfEl = document.createElement('style');
   kfEl.textContent = [
+    /* Heavy camera shake with slight rotation */
     '@keyframes sk-shake{',
-    '  0%  {transform:translate(0,0)}',
-    '  9%  {transform:translate(-9px,5px)}',
-    '  20% {transform:translate(8px,-7px)}',
-    '  31% {transform:translate(-7px,6px)}',
-    '  42% {transform:translate(6px,-5px)}',
-    '  53% {transform:translate(-4px,4px)}',
-    '  64% {transform:translate(3px,-3px)}',
-    '  75% {transform:translate(-2px,2px)}',
-    '  86% {transform:translate(1px,-1px)}',
-    '  100%{transform:translate(0,0)}',
+    '  0%   {transform:translate(0,0) rotate(0deg)}',
+    '  8%   {transform:translate(-16px,9px) rotate(-0.6deg)}',
+    '  18%  {transform:translate(14px,-12px) rotate(0.4deg)}',
+    '  28%  {transform:translate(-12px,10px) rotate(-0.5deg)}',
+    '  38%  {transform:translate(10px,-9px) rotate(0.3deg)}',
+    '  48%  {transform:translate(-7px,7px) rotate(-0.2deg)}',
+    '  58%  {transform:translate(5px,-5px) rotate(0.1deg)}',
+    '  68%  {transform:translate(-3px,3px) rotate(0deg)}',
+    '  80%  {transform:translate(2px,-2px) rotate(0deg)}',
+    '  100% {transform:translate(0,0) rotate(0deg)}',
     '}',
+    /* Searing white flash */
     '@keyframes sk-flash{',
-    '  0%  {opacity:1}',
-    '  45% {opacity:0.7}',
-    '  100%{opacity:0}',
+    '  0%   {opacity:1}',
+    '  25%  {opacity:0.95}',
+    '  100% {opacity:0}',
+    '}',
+    /* Subtle pulse on frozen name */
+    '@keyframes sk-pulse{',
+    '  0%,100% {filter:drop-shadow(0 0 24px rgba(124,58,237,0.9)) drop-shadow(0 0 60px rgba(34,211,238,0.4))}',
+    '  50%     {filter:drop-shadow(0 0 36px rgba(124,58,237,1))   drop-shadow(0 0 90px rgba(34,211,238,0.6))}',
     '}',
   ].join('\n');
   document.head.appendChild(kfEl);
 
-  /* ── Build full-screen overlay ───────────────────────────────────────────── */
+  /* ── DOM ─────────────────────────────────────────────────────────────────── */
   var splash = document.createElement('div');
   splash.id = 'sk-splash';
   css(splash, {
@@ -54,89 +60,91 @@
     background: BG, overflow: 'hidden',
   });
 
-  /* Ambient radial glow */
-  var ambientGlow = document.createElement('div');
-  css(ambientGlow, {
-    position: 'absolute', inset: '0', opacity: '0',
-    transition: 'opacity 0.65s ease',
-    background: 'radial-gradient(ellipse 58% 40% at 50% 50%,' +
-      'rgba(124,58,237,0.22) 0%,rgba(34,211,238,0.05) 50%,transparent 72%)',
-    pointerEvents: 'none',
-  });
-  splash.appendChild(ambientGlow);
+  /* Ambient glow — painted on canvas during fly-in */
+  var cvs = document.createElement('canvas');
+  cvs.width  = W;
+  cvs.height = H;
+  css(cvs, { position: 'absolute', inset: '0', zIndex: '1', pointerEvents: 'none' });
+  splash.appendChild(cvs);
+  var ctx = cvs.getContext('2d');
 
-  /* Flying name element */
+  /*
+   * The name is a sharp DOM element during fly-in.
+   * At impact it is drawn onto the canvas (so both split slabs inherit it)
+   * and the DOM element is hidden.
+   */
   var nameEl = document.createElement('div');
   nameEl.textContent = 'Saeed Khoury';
   css(nameEl, {
     position: 'absolute',
     top: '50%', left: '50%',
-    transform: 'translate(-50%,-50%) scale(0.006)',
+    transform: 'translate(-50%,-50%) scale(0.003)',
     fontFamily: "'Space Grotesk', system-ui, sans-serif",
     fontWeight: '700',
-    fontSize: Math.min(W * 0.095, 88) + 'px',
+    fontSize: FS + 'px',
     letterSpacing: '-0.03em',
     whiteSpace: 'nowrap',
-    opacity: '0',
-    filter: 'blur(22px)',
-    willChange: 'transform, filter, opacity',
-    background: 'linear-gradient(100deg,#fff 15%,#c084fc 35%,#22d3ee 52%,#c084fc 68%,#fff 85%)',
-    backgroundSize: '220% auto',
+    /* SHARP — no blur; glow grows via filter during approach */
+    filter: 'drop-shadow(0 0 4px rgba(124,58,237,0.5))',
+    background: 'linear-gradient(100deg,#fff 10%,#c084fc 32%,#22d3ee 50%,#c084fc 68%,#fff 90%)',
+    backgroundSize: '200% auto',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
     userSelect: 'none',
     pointerEvents: 'none',
+    zIndex: '4',
+    willChange: 'transform, filter',
   });
   splash.appendChild(nameEl);
 
-  /* Single canvas for ALL post-impact drawing: shockwave + cracks + particles */
-  var cvs = document.createElement('canvas');
-  cvs.width  = W;
-  cvs.height = H;
-  css(cvs, {
-    position: 'absolute', inset: '0',
-    pointerEvents: 'none', zIndex: '2',
-  });
-  splash.appendChild(cvs);
-
   document.body.appendChild(splash);
-  var ctx = cvs.getContext('2d');
 
-  /* ── Animation state ─────────────────────────────────────────────────────── */
-  var mainRaf    = null;
-  var particles  = [];
-  var cracks     = [];
-  /* These are set at impact time */
-  var impactTime = 0;
-  var crackT0    = 0;
-  var CRACK_DUR  = 280;   /* ms */
-  var SHOCK_DUR  = 420;   /* ms */
-  var CRACK_START= 90;    /* ms after impact: when cracks begin drawing */
+  /* ── State ───────────────────────────────────────────────────────────────── */
+  var mainRaf      = null;
+  var particles    = [];
+  var cracks       = [];
+  var impactTime   = 0;
+  var crackT0      = 0;
+  var nameDrawn    = false;  /* true once name is painted on canvas */
+  var CRACK_START  = 75;     /* ms after impact: cracks begin */
+  var CRACK_DUR    = 370;    /* ms: crack drawing duration */
+  var FREEZE_DUR   = 320;    /* ms: pause after cracks — name frozen on shattered glass */
+  var SPLIT_OFFSET = CRACK_START + CRACK_DUR + FREEZE_DUR; /* ms to doSplit */
 
-  /* ── PHASE 1 — Fly-in (quintic ease-in, 1 380 ms) ───────────────────────── */
+  /* ── PHASE 1: Fly-in ─────────────────────────────────────────────────────── */
   setTimeout(function () {
-    ambientGlow.style.opacity = '1';
-    nameEl.style.opacity = '1';
-
-    var t0        = performance.now();
-    var FLY_DUR   = 1380;
-    var prevScale = 0.006;
+    var t0       = performance.now();
+    var FLY_DUR  = 1250;
+    var prevScale = 0.003;
 
     function flyFrame(now) {
-      var t = Math.min((now - t0) / FLY_DUR, 1);
-      /* Quintic ease-in: almost stationary at first, explosive at end */
-      var e     = t * t * t * t * t;
-      var scale = 0.006 + e * 0.994;
-      /* Velocity-proportional motion blur */
-      var velBlur  = Math.min(10, (scale - prevScale) * 350);
-      var baseBlur = Math.max(0, 20 * (1 - Math.min(1, e * 1.6)));
-      prevScale = scale;
+      var t  = Math.min((now - t0) / FLY_DUR, 1);
+      var e  = t * t * t * t * t;            /* quintic ease-in */
+      var sc = 0.003 + e * 0.997;
 
-      nameEl.style.transform = 'translate(-50%,-50%) scale(' + scale.toFixed(5) + ')';
-      nameEl.style.filter    = 'blur(' + (baseBlur + velBlur).toFixed(1) + 'px)';
-      nameEl.style.opacity   = Math.min(1, e * 6).toFixed(3);
+      /* Drop-shadow grows instead of blur — name stays sharp */
+      var glowPx  = Math.min(50, sc * 65);
+      var glowAlp = Math.min(1, e * 2.5);
+      nameEl.style.transform = 'translate(-50%,-50%) scale(' + sc.toFixed(5) + ')';
+      nameEl.style.filter    =
+        'drop-shadow(0 0 ' + glowPx.toFixed(0) + 'px rgba(124,58,237,' + glowAlp.toFixed(2) + '))' +
+        ' drop-shadow(0 0 ' + (glowPx * 0.5).toFixed(0) + 'px rgba(34,211,238,' + (glowAlp * 0.4).toFixed(2) + '))';
 
+      /* Ambient radial glow on canvas behind the name */
+      ctx.clearRect(0, 0, W, H);
+      if (e > 0.005) {
+        var gR   = sc * Math.min(W, H) * 0.55;
+        var gAlp = Math.min(0.65, e * 2);
+        var grad = ctx.createRadialGradient(CX, CY, 0, CX, CY, gR);
+        grad.addColorStop(0,   'rgba(124,58,237,' + (gAlp * 0.55).toFixed(2) + ')');
+        grad.addColorStop(0.4, 'rgba(124,58,237,' + (gAlp * 0.2).toFixed(2)  + ')');
+        grad.addColorStop(1,   'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      prevScale = sc;
       if (t < 1) {
         mainRaf = requestAnimationFrame(flyFrame);
       } else {
@@ -144,86 +152,172 @@
       }
     }
     mainRaf = requestAnimationFrame(flyFrame);
-  }, 120);
+  }, 80);
 
-  /* ── PHASE 2 — Impact ────────────────────────────────────────────────────── */
+  /* ── PHASE 2: Impact ─────────────────────────────────────────────────────── */
   function impact() {
     impactTime = performance.now();
 
-    /* Haptic — Android vibrate; iOS doesn't support navigator.vibrate */
-    if (navigator.vibrate) navigator.vibrate([12, 6, 24]);
+    hapticFeedback();
 
-    /* Snap text then fade out */
-    nameEl.style.transition = 'opacity 0.05s, transform 0.12s ease-out';
-    nameEl.style.opacity    = '0';
-    nameEl.style.transform  = 'translate(-50%,-50%) scale(1.1)';
+    /* Name freezes at full scale with intense glow */
+    nameEl.style.transition = 'transform 0.08s ease-out, filter 0.06s ease-out';
+    nameEl.style.transform  = 'translate(-50%,-50%) scale(1)';
+    nameEl.style.filter     =
+      'drop-shadow(0 0 32px rgba(124,58,237,1)) drop-shadow(0 0 80px rgba(34,211,238,0.5))';
 
-    /* White flash */
+    /* Full-screen white flash */
     var flash = document.createElement('div');
     css(flash, {
-      position: 'absolute', inset: '0', zIndex: '10',
-      background: 'rgba(255,255,255,0.92)',
-      animation: 'sk-flash 0.24s ease-out forwards',
+      position: 'absolute', inset: '0', zIndex: '20',
+      background: '#ffffff',
+      animation: 'sk-flash 0.30s ease-out forwards',
       pointerEvents: 'none',
     });
     splash.appendChild(flash);
     setTimeout(function () {
       if (flash.parentNode) flash.parentNode.removeChild(flash);
-    }, 260);
+    }, 320);
 
-    /* Camera shake */
-    splash.style.animation = 'sk-shake 0.42s ease-out';
-    setTimeout(function () { splash.style.animation = ''; }, 450);
+    /* Heavy camera shake */
+    splash.style.animation = 'sk-shake 0.60s ease-out';
+    setTimeout(function () { splash.style.animation = ''; }, 640);
 
-    /* Build crack geometry and particle list right away */
+    /* Build crack geometry + particle list immediately */
     buildCracks();
     spawnParticles();
     crackT0 = impactTime + CRACK_START;
 
-    /* Single unified render loop handles shockwave + cracks + particles */
+    /*
+     * At 65ms: paint name to canvas (sharp text with gradient + glow),
+     * then hide the DOM element.  From here the canvas owns the name image.
+     */
+    setTimeout(function () {
+      paintNameToCanvas();
+      nameEl.style.transition = 'opacity 0.04s';
+      nameEl.style.opacity    = '0';
+    }, 65);
+
+    /* Single unified render loop: shockwave → name → cracks → particles */
     mainRaf = requestAnimationFrame(renderLoop);
 
-    /* Trigger split once cracks are fully drawn */
-    setTimeout(doSplit, CRACK_START + CRACK_DUR + 80);
+    /* Freeze pause after cracks complete, then split */
+    setTimeout(doSplit, SPLIT_OFFSET);
+  }
+
+  /* ── Haptic: vibrate (Android) + Web Audio thud (iOS + Android) ─────────── */
+  function hapticFeedback() {
+    /* Android vibrate — strong, deliberate pattern */
+    if (navigator.vibrate) navigator.vibrate([80, 20, 110, 15, 55]);
+
+    /*
+     * Web Audio sub-bass thud (40-80 Hz).  Creates physical sensation through
+     * speakers/haptics on both iOS and Android.  Requires prior user gesture —
+     * works if visitor clicked a link to reach the page (normal navigation).
+     */
+    try {
+      var ac   = new (window.AudioContext || window.webkitAudioContext)();
+      var osc  = ac.createOscillator();
+      var gain = ac.createGain();
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(75, ac.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(28, ac.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.7, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.16);
+      osc.start(ac.currentTime);
+      osc.stop(ac.currentTime + 0.18);
+    } catch (e) { /* silently ignored on blocked AudioContext */ }
+  }
+
+  /* ── Paint name text onto canvas (so both split slabs inherit it) ────────── */
+  function paintNameToCanvas() {
+    ctx.save();
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = '700 ' + FS + 'px "Space Grotesk", system-ui, sans-serif';
+
+    /* Outer purple glow — three passes */
+    [
+      {c: 'rgba(124,58,237,0.45)', b: 45},
+      {c: 'rgba(124,58,237,0.25)', b: 22},
+      {c: 'rgba(34,211,238,0.18)', b: 65},
+    ].forEach(function (g) {
+      ctx.shadowColor = g.c;
+      ctx.shadowBlur  = g.b;
+      ctx.fillStyle   = 'white';
+      ctx.fillText('Saeed Khoury', CX, CY);
+    });
+
+    /* Sharp gradient text on top */
+    ctx.shadowBlur = 0;
+    var tw   = ctx.measureText('Saeed Khoury').width;
+    var grad = ctx.createLinearGradient(CX - tw / 2, 0, CX + tw / 2, 0);
+    grad.addColorStop(0,    '#ffffff');
+    grad.addColorStop(0.12, '#e9e3ff');
+    grad.addColorStop(0.35, '#c084fc');
+    grad.addColorStop(0.52, '#22d3ee');
+    grad.addColorStop(0.68, '#c084fc');
+    grad.addColorStop(0.88, '#e9e3ff');
+    grad.addColorStop(1,    '#ffffff');
+    ctx.fillStyle = grad;
+    ctx.fillText('Saeed Khoury', CX, CY);
+    ctx.restore();
+    nameDrawn = true;
   }
 
   /* ── Unified render loop ─────────────────────────────────────────────────── */
   function renderLoop(now) {
-    ctx.clearRect(0, 0, W, H);
     var elapsed = now - impactTime;
+    ctx.clearRect(0, 0, W, H);
 
-    /* ── Shockwave rings (0 → SHOCK_DUR ms) ─── */
-    if (elapsed < SHOCK_DUR) {
-      var st = elapsed / SHOCK_DUR;
-      var maxR = Math.max(W, H) * 0.7;
+    /* 1. Shockwave rings (0 → 520ms) */
+    if (elapsed < 520) {
+      var SDUR = 520;
+      var st   = elapsed / SDUR;
+      var maxR = Math.max(W, H) * 0.9;
 
-      /* Primary ring */
-      var r1 = st * maxR;
-      var a1 = (1 - st) * 0.75;
-      drawRing(CX, CY, r1, Math.max(0.3, 4.5 * (1 - st)),
-        'rgba(124,58,237,' + a1.toFixed(2) + ')');
+      /* Primary violet ring */
+      var r1  = st * maxR;
+      var a1  = Math.pow(1 - st, 1.4) * 0.95;
+      drawRing(CX, CY, r1, Math.max(0.5, 6 * (1 - st)), 'rgba(124,58,237,' + a1.toFixed(3) + ')');
 
-      /* Secondary ring — slightly delayed */
-      var st2 = Math.max(0, (elapsed - 45) / SHOCK_DUR);
-      var r2  = st2 * maxR * 0.85;
-      var a2  = (1 - st) * 0.4;
-      if (a2 > 0 && r2 > 0)
-        drawRing(CX, CY, r2, 1.5, 'rgba(34,211,238,' + a2.toFixed(2) + ')');
+      /* Secondary cyan ring — 60ms lag */
+      var st2 = Math.max(0, (elapsed - 60) / SDUR);
+      if (st2 > 0) {
+        var r2 = st2 * maxR * 0.78;
+        var a2 = Math.pow(1 - st, 1.8) * 0.55;
+        drawRing(CX, CY, r2, 2, 'rgba(34,211,238,' + a2.toFixed(3) + ')');
+      }
+
+      /* Inner white ring — 120ms lag */
+      var st3 = Math.max(0, (elapsed - 120) / SDUR);
+      if (st3 > 0) {
+        var r3 = st3 * maxR * 0.55;
+        var a3 = Math.pow(1 - st, 3) * 0.4;
+        drawRing(CX, CY, r3, 1, 'rgba(255,255,255,' + a3.toFixed(3) + ')');
+      }
     }
 
-    /* ── Cracks (start at CRACK_START ms after impact) ─── */
+    /* 2. Name (drawn once, then re-rendered every frame so clearRect doesn't erase it) */
+    if (nameDrawn) {
+      paintNameToCanvas();
+    }
+
+    /* 3. Cracks grow over the name */
     if (elapsed >= CRACK_START) {
       var cp  = Math.min(1, (now - crackT0) / CRACK_DUR);
-      var cpE = 1 - (1 - cp) * (1 - cp); /* ease-out */
+      var cpE = 1 - Math.pow(1 - cp, 2.5); /* fast-start ease-out */
       cracks.forEach(function (c) { drawCrack(c, cpE); });
     }
 
-    /* ── Particles ─── */
+    /* 4. Particles over everything */
     particles = particles.filter(function (p) { return p.a > 0.01; });
     particles.forEach(function (p) {
-      p.x  += p.vx;  p.y  += p.vy;
-      p.vy += 0.14;  p.vx *= 0.972;
-      p.rot += p.rv; p.a  -= 0.02;
+      p.x  += p.vx; p.y  += p.vy;
+      p.vy += 0.17; p.vx *= 0.962;
+      p.rot += p.rv; p.a -= 0.017;
       ctx.save();
       ctx.globalAlpha = p.a;
       ctx.fillStyle   = p.c;
@@ -236,7 +330,6 @@
     mainRaf = requestAnimationFrame(renderLoop);
   }
 
-  /* ── Ring helper ─────────────────────────────────────────────────────────── */
   function drawRing(x, y, r, lw, color) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -245,158 +338,202 @@
     ctx.stroke();
   }
 
-  /* ── PHASE 3 — Crack generation ──────────────────────────────────────────── */
+  /* ── Crack geometry ──────────────────────────────────────────────────────── */
   function buildCracks() {
     cracks = [];
-    var j = function () { return (Math.random() - 0.5) * 14; };
+    var j = function () { return (Math.random() - 0.5) * 18; };
 
-    /* Main crack — center → top */
+    /* ── Main vertical split (the defining crack) ── */
     cracks.push(makeSeg([
-      {x: CX + j(),   y: CY},
-      {x: CX - 3 + j(), y: CY * 0.5},
-      {x: CX + j(),   y: CY * 0.18},
-      {x: CX + 2 + j(), y: 0},
-    ], 3.2, 'rgba(228,224,255,0.97)'));
+      {x: CX + j(),     y: CY},
+      {x: CX - 5 + j(), y: CY - H * 0.28},
+      {x: CX + 3 + j(), y: CY - H * 0.55},
+      {x: CX + j(),     y: 0},
+    ], 4.5, 'rgba(245,240,255,1)', true));
 
-    /* Main crack — center → bottom */
     cracks.push(makeSeg([
-      {x: CX + j(),   y: CY},
-      {x: CX + 3 + j(), y: CY + H * 0.28},
-      {x: CX + j(),   y: CY + H * 0.58},
-      {x: CX + j(),   y: H},
-    ], 3.2, 'rgba(228,224,255,0.97)'));
+      {x: CX + j(),     y: CY},
+      {x: CX + 5 + j(), y: CY + H * 0.28},
+      {x: CX - 3 + j(), y: CY + H * 0.56},
+      {x: CX + j(),     y: H},
+    ], 4.5, 'rgba(245,240,255,1)', true));
 
-    /* Branch cracks radiating outward */
+    /* ── Radial branches ── */
     [
-      {a: -52,  l: 210}, {a: -115, l: 182}, {a: -35,  l: 148},
-      {a:  57,  l: 202}, {a:  130, l: 175}, {a:  45,  l: 138},
-      {a: -148, l: 155}, {a:  153, l: 162},
+      {a: -48,  l: 250}, {a: -110, l: 215}, {a: -32,  l: 175},
+      {a: -158, l: 195}, {a:  55,  l: 248}, {a:  128, l: 208},
+      {a:  42,  l: 160}, {a:  170, l: 188}, {a: -75,  l: 155},
+      {a:  92,  l: 168}, {a: -130, l: 140}, {a:  18,  l: 145},
     ].forEach(function (arm) {
-      var r  = arm.a * Math.PI / 180;
-      var mx = CX + Math.cos(r) * arm.l * 0.5 + j();
-      var my = CY + Math.sin(r) * arm.l * 0.5 + j();
-      var ex = CX + Math.cos(r) * arm.l + j();
-      var ey = CY + Math.sin(r) * arm.l + j();
+      var r   = arm.a * Math.PI / 180;
+      var pts = [{x: CX, y: CY}];
+      for (var s = 1; s <= 3; s++) {
+        var f = s / 3;
+        pts.push({
+          x: CX + Math.cos(r) * arm.l * f + j(),
+          y: CY + Math.sin(r) * arm.l * f + j(),
+        });
+      }
+      cracks.push(makeSeg(pts, 2, 'rgba(200,188,255,0.85)'));
 
-      cracks.push(makeSeg(
-        [{x: CX, y: CY}, {x: mx, y: my}, {x: ex, y: ey}],
-        1.5, 'rgba(185,180,248,0.74)'
-      ));
+      var tipX = pts[pts.length - 1].x;
+      var tipY = pts[pts.length - 1].y;
 
-      /* Sub-branch off the arm tip */
-      var r2 = r + (Math.random() - 0.5) * 0.9;
-      var sl = arm.l * 0.38;
+      /* First sub-branch */
+      var r2 = r + (Math.random() - 0.5) * 1.1;
+      var sl = arm.l * 0.44;
       cracks.push(makeSeg([
-        {x: ex, y: ey},
-        {x: ex + Math.cos(r2) * sl * 0.5 + j(), y: ey + Math.sin(r2) * sl * 0.5 + j()},
-        {x: ex + Math.cos(r2) * sl + j(),        y: ey + Math.sin(r2) * sl + j()},
-      ], 0.9, 'rgba(155,150,220,0.55)'));
+        {x: tipX, y: tipY},
+        {x: tipX + Math.cos(r2) * sl * 0.5 + j(), y: tipY + Math.sin(r2) * sl * 0.5 + j()},
+        {x: tipX + Math.cos(r2) * sl + j(),        y: tipY + Math.sin(r2) * sl + j()},
+      ], 1.1, 'rgba(165,152,228,0.6)'));
+
+      /* Second sub-branch (opposite lean) */
+      var r3 = r - (Math.random() - 0.5) * 0.8;
+      var sl2 = arm.l * 0.32;
+      cracks.push(makeSeg([
+        {x: tipX, y: tipY},
+        {x: tipX + Math.cos(r3) * sl2 + j(), y: tipY + Math.sin(r3) * sl2 + j()},
+      ], 0.85, 'rgba(140,128,205,0.45)'));
     });
   }
 
-  function makeSeg(pts, width, color) {
+  function makeSeg(pts, width, color, isMain) {
     var len = 0;
     for (var i = 1; i < pts.length; i++) {
       var dx = pts[i].x - pts[i - 1].x;
       var dy = pts[i].y - pts[i - 1].y;
       len += Math.sqrt(dx * dx + dy * dy);
     }
-    return {pts: pts, width: width, color: color, totalLen: len};
+    return {pts: pts, width: width, color: color, totalLen: len, isMain: !!isMain};
   }
 
   function drawCrack(s, progress) {
     var drawLen  = s.totalLen * progress;
     var traveled = 0;
-    ctx.beginPath();
+
+    if (s.isMain) {
+      /* Inner glow pass for main cracks */
+      ctx.save();
+      ctx.strokeStyle = 'rgba(200,180,255,0.35)';
+      ctx.lineWidth   = s.width + 5;
+      ctx.lineCap     = 'round';
+      ctx.shadowColor = 'rgba(160,130,255,0.5)';
+      ctx.shadowBlur  = 12;
+      drawPath(s.pts, drawLen);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* Actual crack line */
+    ctx.save();
     ctx.strokeStyle = s.color;
     ctx.lineWidth   = s.width;
     ctx.lineCap     = 'round';
     ctx.lineJoin    = 'round';
+    if (s.isMain) {
+      ctx.shadowColor = 'rgba(200,180,255,0.6)';
+      ctx.shadowBlur  = 8;
+    }
+    drawPath(s.pts, drawLen);
+    ctx.stroke();
+    ctx.restore();
+  }
 
-    for (var i = 0; i < s.pts.length - 1; i++) {
-      var a    = s.pts[i];
-      var b    = s.pts[i + 1];
+  function drawPath(pts, maxLen) {
+    var traveled = 0;
+    ctx.beginPath();
+    for (var i = 0; i < pts.length - 1; i++) {
+      var a    = pts[i];
+      var b    = pts[i + 1];
       var sLen = Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
-
       if (i === 0) ctx.moveTo(a.x, a.y);
-      if (traveled >= drawLen) break;
-
-      if (traveled + sLen <= drawLen) {
+      if (traveled >= maxLen) break;
+      if (traveled + sLen <= maxLen) {
         ctx.lineTo(b.x, b.y);
       } else {
-        var t = (drawLen - traveled) / sLen;
+        var t = (maxLen - traveled) / sLen;
         ctx.lineTo(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
         break;
       }
       traveled += sLen;
     }
-    ctx.stroke();
   }
 
   /* ── Particles ───────────────────────────────────────────────────────────── */
   function spawnParticles() {
-    for (var i = 0; i < 65; i++) {
+    var cols = [ACCENT, CYAN, '#e9d5ff', '#ffffff', '#67e8f9', '#a78bfa'];
+    for (var i = 0; i < 95; i++) {
       var ang  = Math.random() * Math.PI * 2;
-      var spd  = 1.8 + Math.random() * 6.5;
-      var long = Math.random() > 0.5;
+      var spd  = 2.5 + Math.random() * 10;
+      var big  = Math.random() > 0.65;
+      var long = !big && Math.random() > 0.4;
       particles.push({
-        x:   CX + (Math.random() - 0.5) * 60,
-        y:   CY + (Math.random() - 0.5) * 60,
+        x:   CX + (Math.random() - 0.5) * 90,
+        y:   CY + (Math.random() - 0.5) * 90,
         vx:  Math.cos(ang) * spd,
         vy:  Math.sin(ang) * spd,
-        w:   long ? 1.2 + Math.random() * 1.8 : 2 + Math.random() * 3.5,
-        h:   long ? 5   + Math.random() * 10  : 2 + Math.random() * 3.5,
-        c:   Math.random() > 0.5 ? ACCENT : CYAN,
-        a:   0.9,
+        w:   big  ? 3.5 + Math.random() * 6  : long ? 1.2 + Math.random() * 2 : 2.5 + Math.random() * 3.5,
+        h:   big  ? 3.5 + Math.random() * 6  : long ? 7   + Math.random() * 16 : 2.5 + Math.random() * 3.5,
+        c:   cols[Math.floor(Math.random() * cols.length)],
+        a:   0.95,
         rot: Math.random() * Math.PI * 2,
-        rv:  (Math.random() - 0.5) * 0.28,
+        rv:  (Math.random() - 0.5) * 0.35,
       });
     }
   }
 
-  /* ── PHASE 4 — Screen split ──────────────────────────────────────────────── */
+  /* ── PHASE 4: Screen split ───────────────────────────────────────────────── */
   function doSplit() {
     cancelAnimationFrame(mainRaf);
 
-    /* Snapshot crack state to image for the slab overlays */
-    var crackImg = cvs.toDataURL();
+    /*
+     * Render a clean final frame: name + fully drawn cracks, no particles,
+     * no shockwave — this is the image frozen onto both split slabs.
+     */
+    ctx.clearRect(0, 0, W, H);
+    paintNameToCanvas();
+    cracks.forEach(function (c) { drawCrack(c, 1); });
 
-    var leftSlab  = buildSlab(true,  crackImg);
-    var rightSlab = buildSlab(false, crackImg);
+    var snapshot = cvs.toDataURL();
+
+    var leftSlab  = buildSlab(true,  snapshot);
+    var rightSlab = buildSlab(false, snapshot);
 
     document.body.appendChild(leftSlab);
     document.body.appendChild(rightSlab);
 
-    /* Hide splash (don't remove — avoids background flicker) */
     splash.style.visibility = 'hidden';
 
-    /* Double rAF: ensures painted styles are committed before transition fires */
+    /* Double rAF: guarantees initial transform is painted before transition */
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        var spring = 'cubic-bezier(0.22, 1, 0.36, 1)';
-        var easing = 'transform 0.98s ' + spring;
+        /*
+         * Spring cubic-bezier: fast departure, slight overshoot, settle.
+         * perspective() in the transform string applies to the element itself.
+         */
+        var spring = 'cubic-bezier(0.16, 1, 0.3, 1)';
+        var ease   = 'transform 1.1s ' + spring;
 
-        leftSlab.style.transition  = easing;
-        rightSlab.style.transition = easing;
+        leftSlab.style.transition  = ease;
+        rightSlab.style.transition = ease;
 
-        /* Slide apart with subtle 3-D perspective tilt.
-           perspective() must be first in transform to apply to the element itself. */
-        leftSlab.style.transform  = 'perspective(1200px) translateX(-105%) rotateY(8deg) rotateZ(-0.4deg)';
-        rightSlab.style.transform = 'perspective(1200px) translateX(105%)  rotateY(-8deg) rotateZ(0.4deg)';
+        leftSlab.style.transform  = 'perspective(900px) translateX(-115%) rotateY(14deg) rotateZ(-0.7deg)';
+        rightSlab.style.transform = 'perspective(900px) translateX(115%)  rotateY(-14deg) rotateZ(0.7deg)';
       });
     });
 
-    /* Cleanup: remove all splash DOM, restore scroll */
+    /* Cleanup after transition ends */
     setTimeout(function () {
       if (leftSlab.parentNode)  leftSlab.parentNode.removeChild(leftSlab);
       if (rightSlab.parentNode) rightSlab.parentNode.removeChild(rightSlab);
       if (splash.parentNode)    splash.parentNode.removeChild(splash);
       document.body.style.overflow = '';
-    }, 1120);
+    }, 1200);
   }
 
-  /* Build one half-slab ───────────────────────────────────────────────────── */
-  function buildSlab(isLeft, crackDataURL) {
+  /* ── Build one split slab ────────────────────────────────────────────────── */
+  function buildSlab(isLeft, snapshotDataURL) {
     var slab = document.createElement('div');
     css(slab, {
       position: 'fixed', top: '0',
@@ -407,45 +544,54 @@
       willChange: 'transform',
       pointerEvents: 'none',
     });
-    /* Position: left slab on left, right slab on right */
     slab.style[isLeft ? 'left' : 'right'] = '0';
     slab.style.transformOrigin = isLeft ? 'left center' : 'right center';
 
     /*
-     * Crack overlay — the canvas snapshot is full viewport width.
-     * Left slab:  img.left = 0   → shows left  half
-     * Right slab: img.left = -100% → offsets image left by 50vw, showing right half
+     * Snapshot image is 100 vw wide drawn on a 200%-wide img.
+     * Left  slab: img.left = 0    → shows left  half of snapshot.
+     * Right slab: img.left = -100% (= -50vw) → shows right half.
      */
     var img = document.createElement('img');
-    img.src = crackDataURL;
+    img.src = snapshotDataURL;
     css(img, {
       position: 'absolute', top: '0',
       width: '200%', height: '100%',
-      opacity: '0.94',
       pointerEvents: 'none',
     });
     img.style.left = isLeft ? '0' : '-100%';
     slab.appendChild(img);
 
-    /* Glowing razor edge at the cut seam */
+    /* Dark gradient to BG — makes split feel like real depth */
+    var grad = document.createElement('div');
+    css(grad, {
+      position: 'absolute', inset: '0',
+      background: isLeft
+        ? 'linear-gradient(to right,rgba(7,7,13,0) 85%,rgba(7,7,13,0.35) 100%)'
+        : 'linear-gradient(to left, rgba(7,7,13,0) 85%,rgba(7,7,13,0.35) 100%)',
+      pointerEvents: 'none',
+    });
+    slab.appendChild(grad);
+
+    /* Glowing razor seam edge */
     var edge = document.createElement('div');
     css(edge, {
       position: 'absolute', top: '0', bottom: '0',
-      width: '4px',
+      width: '3px',
     });
     edge.style[isLeft ? 'right' : 'left'] = '0';
     edge.style.background = isLeft
-      ? 'linear-gradient(to right,transparent,rgba(228,220,255,0.95))'
-      : 'linear-gradient(to left, transparent,rgba(228,220,255,0.95))';
+      ? 'linear-gradient(to right,transparent,rgba(220,208,255,0.98))'
+      : 'linear-gradient(to left, transparent,rgba(220,208,255,0.98))';
     edge.style.boxShadow = isLeft
-      ? '2px 0 18px rgba(124,58,237,0.65)'
-      : '-2px 0 18px rgba(124,58,237,0.65)';
+      ? '1px 0 28px rgba(124,58,237,0.85), 3px 0 10px rgba(255,255,255,0.55)'
+      : '-1px 0 28px rgba(124,58,237,0.85), -3px 0 10px rgba(255,255,255,0.55)';
     slab.appendChild(edge);
 
     return slab;
   }
 
-  /* ── Generic CSS helper ──────────────────────────────────────────────────── */
+  /* ── Generic style helper ────────────────────────────────────────────────── */
   function css(el, styles) {
     Object.keys(styles).forEach(function (k) { el.style[k] = styles[k]; });
   }
