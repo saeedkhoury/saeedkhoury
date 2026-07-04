@@ -215,11 +215,15 @@ function setLang(lang) {
   loop();
 })();
 
-/* ─── Portrait 3-D tracking ─────────────────────────────────────── */
+/* ─── Portrait 3-D tracking + eye-pupil tracking ────────────────── */
 (function () {
   var isMobile = ('ontouchstart' in window) || window.innerWidth < 768;
-  var img = document.getElementById('hero-portrait');
-  if (!img) return;
+
+  /* The 3D transform now targets the WRAPPER so both the portrait
+     and the eye dots inside it move together as one rigid unit. */
+  var wrap = document.getElementById('portrait-interactive');
+  var img  = document.getElementById('hero-portrait');
+  if (!wrap || !img) return;
 
   var tx = 0, ty = 0, cx = 0, cy = 0;
 
@@ -228,9 +232,9 @@ function setLang(lang) {
   var TILT_X = 12;
   var MOVE_X = isMobile ? 18 : 70;
   var MOVE_Y = isMobile ? 8  : 35;
-  var LERP   = isMobile ? 0.04 : 0.08;  /* slower on mobile = smoother */
+  var LERP   = isMobile ? 0.04 : 0.08;
 
-  /* Desktop: follow mouse */
+  /* ── Desktop mouse tracking ── */
   if (!isMobile) {
     window.addEventListener('mousemove', function (e) {
       tx = (e.clientX / window.innerWidth  - 0.5) * 2;
@@ -238,14 +242,14 @@ function setLang(lang) {
     });
   }
 
-  /* Mobile: follow device tilt (passive = no scroll jank) */
+  /* ── Mobile gyroscope tracking ── */
   window.addEventListener('deviceorientation', function (e) {
     if (e.gamma == null) return;
     tx = Math.max(-1, Math.min(1, e.gamma / 40));
     ty = Math.max(-1, Math.min(1, (e.beta - 45) / 40));
   }, { passive: true });
 
-  /* Desktop only: dynamic glow update */
+  /* ── Dynamic glow on the img (not the wrapper — avoids GPU layer clash) ── */
   var glowLive = false;
   if (!isMobile) setTimeout(function () { glowLive = true; }, 1000);
 
@@ -253,7 +257,8 @@ function setLang(lang) {
     cx += (tx - cx) * LERP;
     cy += (ty - cy) * LERP;
 
-    img.style.transform =
+    /* Apply 3D transform to the wrapper (portrait + eyes move as one) */
+    wrap.style.transform =
       'perspective(' + PERSP + 'px)' +
       ' rotateY(' + (cx * TILT_Y).toFixed(2) + 'deg)' +
       ' rotateX(' + (-cy * TILT_X).toFixed(2) + 'deg)' +
@@ -272,6 +277,68 @@ function setLang(lang) {
     requestAnimationFrame(tick);
   }
   tick();
+})();
+
+/* ─── Eye pupil tracking ─────────────────────────────────────────── */
+/*
+ * The two .sk-pupil divs sit inside the portrait-interactive wrapper.
+ * Because the wrapper receives the 3D transform, getBoundingClientRect()
+ * on each eye always returns the CURRENT visual (transformed) position —
+ * so the pupils aim accurately at the cursor wherever the head is.
+ *
+ * Desktop only. On touch devices the .portrait-eyes div is hidden via CSS.
+ */
+(function () {
+  var isMobile = ('ontouchstart' in window) || window.innerWidth < 768;
+  if (isMobile) return;
+
+  var eyeL   = document.getElementById('eye-l');
+  var eyeR   = document.getElementById('eye-r');
+  if (!eyeL || !eyeR) return;
+
+  var pupils = [
+    { eye: eyeL, pupil: eyeL.querySelector('.sk-pupil') },
+    { eye: eyeR, pupil: eyeR.querySelector('.sk-pupil') },
+  ];
+
+  var MAX_DIST = 8; /* max px the pupil travels inside the eye */
+
+  function trackPupils(mx, my) {
+    pupils.forEach(function (p) {
+      var r     = p.eye.getBoundingClientRect();
+      var ex    = r.left + r.width  / 2;
+      var ey    = r.top  + r.height / 2;
+      var angle = Math.atan2(my - ey, mx - ex);
+      /* Clamp distance — pupil never escapes the eye ring */
+      var raw   = Math.hypot(mx - ex, my - ey);
+      var dist  = Math.min(MAX_DIST, raw * 0.14);
+      p.pupil.style.transform =
+        'translate(' + (Math.cos(angle) * dist).toFixed(1) + 'px,' +
+                       (Math.sin(angle) * dist).toFixed(1) + 'px)';
+    });
+  }
+
+  window.addEventListener('mousemove', function (e) {
+    trackPupils(e.clientX, e.clientY);
+  });
+
+  /* Smooth return to center when cursor leaves the page */
+  window.addEventListener('mouseleave', function () {
+    pupils.forEach(function (p) {
+      p.pupil.classList.remove('tracking');
+      p.pupil.style.transform = 'translate(0px,0px)';
+    });
+  });
+
+  /* Fast response while cursor is on the page */
+  window.addEventListener('mouseenter', function () {
+    pupils.forEach(function (p) {
+      p.pupil.classList.add('tracking');
+    });
+  });
+
+  /* Start in tracking mode */
+  pupils.forEach(function (p) { p.pupil.classList.add('tracking'); });
 })();
 
 /* ─── Nav scroll ───────────────────────────────────────────────── */

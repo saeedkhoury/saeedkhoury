@@ -7,7 +7,7 @@
   <meta name="description" content="Saeed Khoury — Software Engineering student building real-world solutions with code and AI." />
   <!-- Preload hero portrait so it appears instantly -->
   <link rel="preload" as="image" href="assets/saeed-nobg.webp" type="image/webp">
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
 
@@ -36,10 +36,21 @@
 
   <div class="hero-portrait-wrap" id="portrait-wrap">
     <div class="portrait-glow"></div>
-    <picture>
-      <source srcset="assets/saeed-nobg.webp" type="image/webp">
-      <img src="assets/saeed-nobg.png" class="hero-portrait" id="hero-portrait" alt="Saeed Khoury" fetchpriority="high" width="747" height="1024" decoding="async">
-    </picture>
+
+    <!-- Interactive wrapper — receives the 3D head-tracking transform.
+         The portrait and the eye dots are children so they move together. -->
+    <div class="portrait-interactive" id="portrait-interactive">
+      <picture>
+        <source srcset="assets/saeed-nobg.webp" type="image/webp">
+        <img src="assets/saeed-nobg.png" class="hero-portrait" id="hero-portrait" alt="Saeed Khoury" fetchpriority="high" width="747" height="1024" decoding="async">
+      </picture>
+
+      <!-- Eye-tracking dots — hidden on touch devices -->
+      <div class="portrait-eyes" aria-hidden="true">
+        <div class="sk-eye" id="eye-l"><div class="sk-pupil"></div></div>
+        <div class="sk-eye" id="eye-r"><div class="sk-pupil"></div></div>
+      </div>
+    </div>
   </div>
 
   <!-- Name: bottom center, one line -->
@@ -340,6 +351,6 @@
 </aside>
 
 <script src="splash.js?v=5"></script>
-<script src="script.js?v=5"></script>
+<script src="script.js?v=6"></script>
 </body>
 </html>
