@@ -279,67 +279,6 @@ function setLang(lang) {
   tick();
 })();
 
-/* ─── Eye pupil tracking ─────────────────────────────────────────── */
-/*
- * The two .sk-pupil divs sit inside the portrait-interactive wrapper.
- * Because the wrapper receives the 3D transform, getBoundingClientRect()
- * on each eye always returns the CURRENT visual (transformed) position —
- * so the pupils aim accurately at the cursor wherever the head is.
- *
- * Desktop only. On touch devices the .portrait-eyes div is hidden via CSS.
- */
-(function () {
-  var isMobile = ('ontouchstart' in window) || window.innerWidth < 768;
-  if (isMobile) return;
-
-  var eyeL   = document.getElementById('eye-l');
-  var eyeR   = document.getElementById('eye-r');
-  if (!eyeL || !eyeR) return;
-
-  var pupils = [
-    { eye: eyeL, pupil: eyeL.querySelector('.sk-pupil') },
-    { eye: eyeR, pupil: eyeR.querySelector('.sk-pupil') },
-  ];
-
-  var MAX_DIST = 8; /* max px the pupil travels inside the eye */
-
-  function trackPupils(mx, my) {
-    pupils.forEach(function (p) {
-      var r     = p.eye.getBoundingClientRect();
-      var ex    = r.left + r.width  / 2;
-      var ey    = r.top  + r.height / 2;
-      var angle = Math.atan2(my - ey, mx - ex);
-      /* Clamp distance — pupil never escapes the eye ring */
-      var raw   = Math.hypot(mx - ex, my - ey);
-      var dist  = Math.min(MAX_DIST, raw * 0.14);
-      p.pupil.style.transform =
-        'translate(' + (Math.cos(angle) * dist).toFixed(1) + 'px,' +
-                       (Math.sin(angle) * dist).toFixed(1) + 'px)';
-    });
-  }
-
-  window.addEventListener('mousemove', function (e) {
-    trackPupils(e.clientX, e.clientY);
-  });
-
-  /* Smooth return to center when cursor leaves the page */
-  window.addEventListener('mouseleave', function () {
-    pupils.forEach(function (p) {
-      p.pupil.classList.remove('tracking');
-      p.pupil.style.transform = 'translate(0px,0px)';
-    });
-  });
-
-  /* Fast response while cursor is on the page */
-  window.addEventListener('mouseenter', function () {
-    pupils.forEach(function (p) {
-      p.pupil.classList.add('tracking');
-    });
-  });
-
-  /* Start in tracking mode */
-  pupils.forEach(function (p) { p.pupil.classList.add('tracking'); });
-})();
 
 /* ─── Nav scroll ───────────────────────────────────────────────── */
 const nav = document.getElementById('nav');

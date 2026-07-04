@@ -296,57 +296,6 @@ body {
   to   { opacity: 1; }
 }
 
-/* ── Eye tracking — glow dots that track the cursor ──────────────── */
-/*
- * Positioned as % of the portrait image (747×1024 px source).
- * Tune --eye-y / --eye-lx / --eye-rx if slightly off on your photo.
- *
- * Desktop-only: hidden with (hover:none) media query (touch devices).
- */
-.portrait-eyes {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.sk-eye {
-  position: absolute;
-  /* Eye level: ~33 % from top, adjusted per eye */
-  top: 33%;
-  width: 28px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-#eye-l { left: 40%; } /* left eye  — tune if needed */
-#eye-r { left: 62%; } /* right eye — tune if needed */
-
-.sk-pupil {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(124, 58, 237, 0.92);
-  box-shadow:
-    0 0 6px  3px rgba(124,58,237,0.75),
-    0 0 14px 5px rgba(124,58,237,0.40),
-    0 0 22px 6px rgba(34,211,238,0.20);
-  pointer-events: none;
-  /* JS controls transform; default transition for mouse-leave smooth-back */
-  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
-  will-change: transform;
-}
-
-/* Active tracking — transition overridden to near-instant by JS on mouseenter */
-.sk-pupil.tracking {
-  transition: transform 0.05s linear;
-}
-
-/* Hide on touch / mobile */
-@media (hover: none), (pointer: coarse) {
-  .portrait-eyes { display: none; }
-}
 
 /* ─── Name bar — bottom center, one line ────────────────────── */
 .hero-name-bar {

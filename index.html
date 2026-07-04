@@ -37,19 +37,12 @@
   <div class="hero-portrait-wrap" id="portrait-wrap">
     <div class="portrait-glow"></div>
 
-    <!-- Interactive wrapper — receives the 3D head-tracking transform.
-         The portrait and the eye dots are children so they move together. -->
+    <!-- Interactive wrapper — receives the 3D head-tracking transform -->
     <div class="portrait-interactive" id="portrait-interactive">
       <picture>
         <source srcset="assets/saeed-nobg.webp" type="image/webp">
         <img src="assets/saeed-nobg.png" class="hero-portrait" id="hero-portrait" alt="Saeed Khoury" fetchpriority="high" width="747" height="1024" decoding="async">
       </picture>
-
-      <!-- Eye-tracking dots — hidden on touch devices -->
-      <div class="portrait-eyes" aria-hidden="true">
-        <div class="sk-eye" id="eye-l"><div class="sk-pupil"></div></div>
-        <div class="sk-eye" id="eye-r"><div class="sk-pupil"></div></div>
-      </div>
     </div>
   </div>
 
