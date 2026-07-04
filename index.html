@@ -7,7 +7,7 @@
   <meta name="description" content="Saeed Khoury — Software Engineering student building real-world solutions with code and AI." />
   <!-- Preload hero portrait so it appears instantly -->
   <link rel="preload" as="image" href="assets/saeed-nobg.webp" type="image/webp">
-  <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=8" />
 </head>
 <body>
 
@@ -31,49 +31,37 @@
   <a href="assets/cv/CV.pdf" download class="btn btn-sm nav-cv" data-i18n="nav.resume">Resume</a>
 </nav>
 
-<!-- ─── HERO — Profile card ─────────────────── -->
+<!-- ─── HERO ───────────────────────────────────────────────────── -->
 <section id="home" class="hero">
 
-  <!-- Dark side arm decorations -->
-  <div class="hero-arm hero-arm-l" aria-hidden="true"></div>
-  <div class="hero-arm hero-arm-r" aria-hidden="true"></div>
+  <div class="hero-portrait-wrap" id="portrait-wrap">
+    <div class="portrait-glow"></div>
 
-  <!-- Profile card — id="portrait-interactive" so existing 3D tilt from script.js applies -->
-  <div class="profile-card" id="portrait-interactive">
-
-    <!-- Subtle grid overlay -->
-    <div class="card-grid-bg" aria-hidden="true"></div>
-
-    <!-- Avatar + spinning arc ring -->
-    <div class="av-wrap">
-      <!-- Rotating ring SVG (both dash ring + arc rotate together = arc sweeps around) -->
-      <svg class="av-ring-svg" viewBox="0 0 220 220" aria-hidden="true">
-        <circle cx="110" cy="110" r="104" fill="none"
-                stroke="rgba(255,255,255,0.13)" stroke-width="1.5"
-                stroke-dasharray="4 9"/>
-        <circle cx="110" cy="110" r="104" fill="none"
-                stroke="rgba(255,255,255,0.70)" stroke-width="2.5"
-                stroke-dasharray="130 524" stroke-linecap="round"/>
-      </svg>
-
-      <!-- Circular avatar with checkered transparent background -->
-      <div class="av-circle">
-        <div class="av-checker" aria-hidden="true"></div>
-        <picture>
-          <source srcset="assets/saeed-nobg.webp" type="image/webp">
-          <img src="assets/saeed-nobg.png"
-               class="av-img" id="hero-portrait"
-               alt="Saeed Khoury"
-               fetchpriority="high" width="747" height="1024" decoding="async">
-        </picture>
-      </div>
+    <!-- 3D head-tracking transform applied by script.js -->
+    <div class="portrait-interactive" id="portrait-interactive">
+      <picture>
+        <source srcset="assets/saeed-nobg.webp" type="image/webp">
+        <img src="assets/saeed-nobg.png"
+             class="hero-portrait" id="hero-portrait"
+             alt="Saeed Khoury"
+             fetchpriority="high" width="747" height="1024" decoding="async">
+      </picture>
     </div>
-
-    <h1 class="pf-name">Saeed Khoury</h1>
-    <p class="pf-role">Computer Science &amp; UI/UX</p>
-    <a href="#projects" class="pf-btn">View Projects</a>
-
   </div>
+
+  <div class="hero-name-bar">
+    <h1 class="hero-name">Saeed Khoury</h1>
+    <p class="hero-subtitle"><span id="typewriter"></span><span class="type-cursor">|</span></p>
+  </div>
+
+  <div class="hero-scroll">
+    <svg class="scroll-arrow" viewBox="0 0 24 24" width="32" height="32"
+         fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 9l7 7 7-7" stroke="currentColor"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
 </section>
 
 <!-- ─── INTRO (formerly hero text) ─────────────── -->
@@ -360,7 +348,7 @@
   <div class="sidebar-line"></div>
 </aside>
 
-<script src="splash.js?v=10"></script>
+<script src="splash.js?v=11"></script>
 <script src="script.js?v=6"></script>
 </body>
 </html>

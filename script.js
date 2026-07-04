@@ -4,7 +4,7 @@ var currentLang = (function() {
 })();
 
 var typewriterPhrases = {
-  en: ['Software Engineer', 'Vibecoder', 'AI-Powered Builder', 'CS Student', 'Problem Solver'],
+  en: ['Webcoding & Software Engineer', 'Vibecoder', 'AI-Powered Builder', 'CS Student', 'Problem Solver'],
   he: ['מהנדס תוכנה', 'ויבקודר', 'בונה מונע AI', 'סטודנט למדמ"ח', 'פותר בעיות']
 };
 

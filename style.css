@@ -223,155 +223,150 @@ body {
 }
 
 /* ─── Hero ───────────────────────────────────────────────────── */
-/* ─── Hero — profile card ────────────────────────────────────── */
 .hero {
   position: relative;
   z-index: 1;
   height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* Dark side arm decorations (barely-visible mechanical shapes) */
-.hero-arm {
-  position: absolute;
-  top: 50%;
-  width: 150px;
-  height: 420px;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    rgba(22,26,38,0.55) 35%,
-    rgba(22,26,38,0.55) 65%,
-    transparent 100%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-.hero-arm-l { left:  -55px; transform: translateY(-50%) scaleX(0.75); }
-.hero-arm-r { right: -55px; transform: translateY(-50%) scaleX(0.75); }
-
-/* ── Profile card ─────────────────────────────────────────────── */
-.profile-card {
-  position: relative;
-  width: 468px;
-  max-width: 93vw;
-  background: rgba(12,14,20,0.92);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 18px;
-  padding: 36px 28px 28px;
-  display: flex;
   flex-direction: column;
   align-items: center;
-  backdrop-filter: blur(18px);
+  justify-content: flex-end;
+  /* No overflow:hidden — it flattens 3D transforms */
+}
+
+/* Portrait wrap — full-screen centred */
+.hero-portrait-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Ambient glow behind the figure */
+.portrait-glow {
+  position: absolute;
+  bottom: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 65vw;
+  height: 65vw;
+  max-width: 700px;
+  max-height: 700px;
+  background: radial-gradient(ellipse at 50% 65%,
+    rgba(124,58,237,0.20) 0%,
+    rgba(34,211,238,0.07) 45%,
+    transparent 70%);
+  pointer-events: none;
+  animation: glow-breathe 5s ease-in-out infinite;
+}
+@keyframes glow-breathe {
+  0%,100% { opacity:0.65; transform:translateX(-50%) scale(0.95); }
+  50%      { opacity:1;    transform:translateX(-50%) scale(1.05); }
+}
+
+/* Interactive portrait wrapper — receives the 3D tracking transform */
+.portrait-interactive {
+  position: relative;
+  display: inline-block;
+  pointer-events: none;
   will-change: transform;
 }
 
-/* Subtle grid overlay on card */
-.card-grid-bg {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.024) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.024) 1px, transparent 1px);
-  background-size: 42px 42px;
-  pointer-events: none;
-}
-
-/* ── Avatar wrapper ───────────────────────────────────────────── */
-.av-wrap {
-  position: relative;
-  width: 210px;
-  height: 210px;
-  margin-bottom: 18px;
-  flex-shrink: 0;
-}
-
-/* Rotating SVG ring — both the dashed circle and the arc rotate
-   together so the arc clearly sweeps around the avatar */
-.av-ring-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  animation: av-spin 5s linear infinite;
-}
-@keyframes av-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-/* Avatar image circle */
-.av-circle {
-  position: absolute;
-  inset: 16px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 1.5px solid rgba(255,255,255,0.10);
-}
-
-/* Checkered background — visible through transparent parts of the photo */
-.av-checker {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background-image: repeating-conic-gradient(#252626 0% 25%, #1b1c1c 25% 50%);
-  background-size: 14px 14px;
-}
-
-/* Avatar photo */
-.av-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  border-radius: 50%;
-}
-
-/* ── Name + role ──────────────────────────────────────────────── */
-.pf-name {
-  font-family: var(--ff-display);
-  font-size: 1.95rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: #ffffff;
-  margin: 0 0 7px;
-  text-align: center;
-}
-.pf-role {
-  font-size: 0.88rem;
-  color: rgba(255,255,255,0.42);
-  margin: 0 0 26px;
-  text-align: center;
-}
-
-/* ── View Projects button ─────────────────────────────────────── */
-.pf-btn {
+/* Portrait image */
+.hero-portrait {
   display: block;
-  width: 100%;
-  padding: 13px 20px;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.13);
-  border-radius: 10px;
-  color: rgba(255,255,255,0.88);
-  font-family: var(--ff-display);
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-align: center;
-  text-decoration: none;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  height: 88vh;
+  max-height: 820px;
+  width: auto;
+  animation: portrait-fadein 0.9s ease both;
+  filter: drop-shadow(0 0 50px rgba(124,58,237,0.22))
+          drop-shadow(0 0 100px rgba(34,211,238,0.10));
 }
-.pf-btn:hover {
-  background: rgba(255,255,255,0.18);
-  border-color: rgba(255,255,255,0.26);
-  color: #fff;
+@keyframes portrait-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* Blink cursor — kept for the vibecoding chat section */
+/* Name bar — bottom centre */
+.hero-name-bar {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding-bottom: 3.5rem;
+  pointer-events: none;
+}
+.hero-name {
+  font-family: var(--ff-display);
+  font-size: clamp(2.4rem, 6vw, 5.2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  white-space: nowrap;
+  background: linear-gradient(
+    100deg,
+    #ffffff 15%, #c084fc 35%, #22d3ee 52%, #c084fc 68%, #ffffff 85%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 18px rgba(124,58,237,0.55))
+          drop-shadow(0 0 36px rgba(34,211,238,0.25));
+  animation:
+    slide-up   1s 0.3s cubic-bezier(.16,1,.3,1) both,
+    name-shine 5s 1.4s linear infinite,
+    name-glow  3s 1.4s ease-in-out infinite;
+}
+@keyframes slide-up {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes name-shine {
+  0%   { background-position: 200% center; }
+  100% { background-position: -50%  center; }
+}
+@keyframes name-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 14px rgba(124,58,237,0.50))
+            drop-shadow(0 0 30px rgba(34,211,238,0.18));
+  }
+  50% {
+    filter: drop-shadow(0 0 24px rgba(124,58,237,0.80))
+            drop-shadow(0 0 50px rgba(34,211,238,0.40));
+  }
+}
+.hero-subtitle {
+  font-family: var(--ff-mono);
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
+  color: var(--cyan);
+  min-height: 1.4rem;
+  margin-top: 0.5rem;
+  opacity: 0.85;
+}
+
+/* Scroll indicator */
+.hero-scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  animation: fade-in 1s 1.8s both;
+}
+.scroll-arrow {
+  display: block;
+  color: rgba(124,58,237,0.55);
+  filter: drop-shadow(0 0 6px rgba(124,58,237,0.4));
+  animation: arrow-bounce 2.2s ease-in-out infinite;
+}
+@keyframes arrow-bounce {
+  0%, 100% { transform: translateY(0);   opacity: 0.55; }
+  50%       { transform: translateY(9px); opacity: 1;    }
+}
+
+/* Blink cursor — used by hero subtitle + vibecoding chat */
 .type-cursor {
   animation: blink 1s step-end infinite;
   color: var(--accent);
@@ -861,7 +856,7 @@ body {
 [dir="rtl"] .intro-badge {
   font-family: system-ui, 'Segoe UI', Arial, sans-serif;
 }
-[dir="rtl"] .pf-name,
+[dir="rtl"] .hero-name,
 [dir="rtl"] .section-title,
 [dir="rtl"] .vibe-tool h3,
 [dir="rtl"] .proj-body h3 {
@@ -927,11 +922,11 @@ body {
   .nav-toggle { display: flex; z-index: 91; }
   .nav-cv { display: none; }
 
-  /* Profile card on mobile */
-  .av-wrap   { width: 168px; height: 168px; }
-  .pf-name   { font-size: 1.65rem; }
-  .pf-role   { font-size: 0.82rem; }
-  .hero-arm  { display: none; }
+  .hero-portrait { height: 72vh; }
+  .hero-name { font-size: clamp(2rem, 8vw, 3.5rem); white-space: nowrap;
+               animation: slide-up 1s 0.3s cubic-bezier(.16,1,.3,1) both;
+               filter: none; }
+  .portrait-glow { display: none; }
   #bg-canvas { display: none; }
   .intro-inner { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
 
@@ -947,5 +942,5 @@ body {
 
 @media (max-width: 480px) {
   .vibe-tools { grid-template-columns: 1fr; }
-  .av-wrap    { width: 148px; height: 148px; }
+  .hero-name  { font-size: clamp(2.5rem, 12vw, 3.5rem); }
 }
