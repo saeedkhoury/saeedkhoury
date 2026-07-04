@@ -1,11 +1,22 @@
 /* ─────────────────────────────────────────────────────────────────────────── *
- *  Cinematic Splash v2 — Saeed Khoury Portfolio                               *
- *  Name flies sharp from infinite distance → slams into screen →              *
- *  screen shatters → name freezes on cracked glass →                          *
- *  two halves blast open revealing the site.  Total: ~3.2 s                   *
+ *  Cinematic Splash v3 — Saeed Khoury Portfolio                               *
+ *  Name flies from distance (blurry → sharp) → slams into screen →           *
+ *  screen freezes cracked → glass pieces fall with gravity revealing site.    *
+ *  Total: ~3.5 s                                                              *
  * ─────────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
+
+  /*
+   * BUG FIX: Remove any stale splash/slab elements left over from a previous
+   * run before checking sessionStorage.  This prevents visual glitches when
+   * testing by clearing sessionStorage and reloading within the same tab.
+   */
+  var stale = document.getElementById('sk-splash');
+  if (stale) { stale.parentNode.removeChild(stale); document.body.style.overflow = ''; }
+  document.querySelectorAll('.sk-slab').forEach(function (el) {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  });
 
   if (sessionStorage.getItem('sk-intro')) return;
   sessionStorage.setItem('sk-intro', '1');
@@ -84,8 +95,8 @@
     fontSize: FS + 'px',
     letterSpacing: '-0.03em',
     whiteSpace: 'nowrap',
-    /* SHARP — no blur; glow grows via filter during approach */
-    filter: 'drop-shadow(0 0 4px rgba(124,58,237,0.5))',
+    /* Starts blurry (far away), sharpens as it approaches */
+    filter: 'blur(20px)',
     background: 'linear-gradient(100deg,#fff 10%,#c084fc 32%,#22d3ee 50%,#c084fc 68%,#fff 90%)',
     backgroundSize: '200% auto',
     WebkitBackgroundClip: 'text',
@@ -109,7 +120,7 @@
   var nameDrawn    = false;  /* true once name is painted on canvas */
   var CRACK_START  = 75;     /* ms after impact: cracks begin */
   var CRACK_DUR    = 370;    /* ms: crack drawing duration */
-  var FREEZE_DUR   = 320;    /* ms: pause after cracks — name frozen on shattered glass */
+  var FREEZE_DUR   = 420;    /* ms: pause after cracks — name frozen on shattered glass */
   var SPLIT_OFFSET = CRACK_START + CRACK_DUR + FREEZE_DUR; /* ms to doSplit */
 
   /* ── PHASE 1: Fly-in ─────────────────────────────────────────────────────── */
@@ -123,13 +134,19 @@
       var e  = t * t * t * t * t;            /* quintic ease-in */
       var sc = 0.003 + e * 0.997;
 
-      /* Drop-shadow grows instead of blur — name stays sharp */
-      var glowPx  = Math.min(50, sc * 65);
-      var glowAlp = Math.min(1, e * 2.5);
+      /*
+       * Blur starts at 20 px when tiny (far away), dissolves to 0 as name
+       * fills the screen.  Glow intensifies simultaneously.
+       * The name is fully sharp for the last ~18% of the fly-in.
+       */
+      var blurPx  = Math.max(0, 20 * (1 - Math.min(1, e * 1.6)));
+      var glowPx  = Math.min(52, sc * 68);
+      var glowAlp = Math.min(1, e * 2.8);
       nameEl.style.transform = 'translate(-50%,-50%) scale(' + sc.toFixed(5) + ')';
       nameEl.style.filter    =
-        'drop-shadow(0 0 ' + glowPx.toFixed(0) + 'px rgba(124,58,237,' + glowAlp.toFixed(2) + '))' +
-        ' drop-shadow(0 0 ' + (glowPx * 0.5).toFixed(0) + 'px rgba(34,211,238,' + (glowAlp * 0.4).toFixed(2) + '))';
+        'blur(' + blurPx.toFixed(1) + 'px)' +
+        ' drop-shadow(0 0 ' + glowPx.toFixed(0) + 'px rgba(124,58,237,' + glowAlp.toFixed(2) + '))' +
+        ' drop-shadow(0 0 ' + (glowPx * 0.45).toFixed(0) + 'px rgba(34,211,238,' + (glowAlp * 0.35).toFixed(2) + '))';
 
       /* Ambient radial glow on canvas behind the name */
       ctx.clearRect(0, 0, W, H);
@@ -499,37 +516,42 @@
 
     var leftSlab  = buildSlab(true,  snapshot);
     var rightSlab = buildSlab(false, snapshot);
+    leftSlab.className  = 'sk-slab';
+    rightSlab.className = 'sk-slab';
 
     document.body.appendChild(leftSlab);
     document.body.appendChild(rightSlab);
 
     splash.style.visibility = 'hidden';
 
-    /* Double rAF: guarantees initial transform is painted before transition */
+    /* Double rAF: guarantees initial transform is committed before transition */
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         /*
-         * Spring cubic-bezier: fast departure, slight overshoot, settle.
-         * perspective() in the transform string applies to the element itself.
+         * Strong ease-in mimics gravity: barely moves at first (glass starting
+         * to give way), then accelerates off the bottom like falling shards.
+         * translate() uses element-own dimensions: translateY(135%) = 135 vh down.
+         * Rotation is CCW for left, CW for right — natural outward lean as they fall.
+         * transform: translate then rotate = translate in screen coords, rotate around center.
          */
-        var spring = 'cubic-bezier(0.16, 1, 0.3, 1)';
-        var ease   = 'transform 1.1s ' + spring;
+        var gravity = 'cubic-bezier(0.45, 0, 0.95, 1)';
 
-        leftSlab.style.transition  = ease;
-        rightSlab.style.transition = ease;
+        leftSlab.style.transition  = 'transform 1.35s ' + gravity;
+        rightSlab.style.transition = 'transform 1.35s ' + gravity + ' 0.09s';
 
-        leftSlab.style.transform  = 'perspective(900px) translateX(-115%) rotateY(14deg) rotateZ(-0.7deg)';
-        rightSlab.style.transform = 'perspective(900px) translateX(115%)  rotateY(-14deg) rotateZ(0.7deg)';
+        leftSlab.style.transform  = 'translate(-10%, 135%) rotate(-17deg)';
+        rightSlab.style.transform = 'translate(10%,  130%) rotate(17deg)';
       });
     });
 
     /* Cleanup after transition ends */
     setTimeout(function () {
-      if (leftSlab.parentNode)  leftSlab.parentNode.removeChild(leftSlab);
-      if (rightSlab.parentNode) rightSlab.parentNode.removeChild(rightSlab);
-      if (splash.parentNode)    splash.parentNode.removeChild(splash);
+      document.querySelectorAll('.sk-slab').forEach(function (el) {
+        if (el.parentNode) el.parentNode.removeChild(el);
+      });
+      if (splash.parentNode) splash.parentNode.removeChild(splash);
       document.body.style.overflow = '';
-    }, 1200);
+    }, 1550);
   }
 
   /* ── Build one split slab ────────────────────────────────────────────────── */
@@ -545,7 +567,8 @@
       pointerEvents: 'none',
     });
     slab.style[isLeft ? 'left' : 'right'] = '0';
-    slab.style.transformOrigin = isLeft ? 'left center' : 'right center';
+    /* transformOrigin stays at default center — rotation around the slab's midpoint
+       creates a natural outward lean as the piece falls under gravity */
 
     /*
      * Snapshot image is 100 vw wide drawn on a 200%-wide img.
