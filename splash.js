@@ -96,14 +96,18 @@
    *  ACT 2 — Name launches at screen, cracks form, glass falls
    * ════════════════════════════════════════════════════════════════════ */
   function launchAndCrash() {
-    /* ── 1. Rocket the mark toward camera (quintic ease-in) ── */
-    mark.style.transition = 'transform 0.52s cubic-bezier(0.9,0,1,1), opacity 0.1s ease 0.44s';
-    mark.style.transform  = 'translateY(0) scale(22)';
+    /*
+     * Short sharp punch forward — scale 1 → 1.6 in 160 ms.
+     * Feels like the screen being struck, not a rocket launch.
+     * The impact is the crack, not the approach.
+     */
+    mark.style.transition = 'transform 0.16s cubic-bezier(0.6,0,1,1), opacity 0.06s ease 0.12s';
+    mark.style.transform  = 'translateY(0) scale(1.6)';
     mark.style.opacity    = '0';
-    rule.style.transition = 'opacity 0.1s ease 0.44s';
+    rule.style.transition = 'opacity 0.06s ease 0.12s';
     rule.style.opacity    = '0';
 
-    /* ── 2. Impact at end of approach ── */
+    /* ── 2. Impact fires right after the short punch ── */
     setTimeout(function impact() {
       hapticFeedback();
 
@@ -160,7 +164,7 @@
       }
       requestAnimationFrame(drawFrame);
 
-    }, 500); /* impact fires 500ms after launch starts */
+    }, 170); /* impact fires right after the 160ms punch */
   }
 
   /* ════════════════════════════════════════════════════════════════════
