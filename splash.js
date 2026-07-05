@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────────────── *
- *  MARK v12 — Saeed Khoury → scramble → SK → zoom → site reveals         *
+ *  MARK v13 — Saeed Khoury → scramble → SK (haptic + audio) → zoom       *
  * ─────────────────────────────────────────────────────────────────────────*/
 (function () {
   'use strict';
@@ -12,6 +12,9 @@
 
   if (sessionStorage.getItem('sk-intro')) return;
   sessionStorage.setItem('sk-intro', '1');
+
+  var AC = null;
+  try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
 
   document.body.style.overflow = 'hidden';
 
@@ -143,6 +146,42 @@
   }
 
   /* ════════════════════════════════════════════════════════════════
+   *  SK IMPACT — haptic + low-end audio thud when SK locks in
+   * ════════════════════════════════════════════════════════════════ */
+  function osc(type, f0, f1, gain, delay, dur) {
+    try {
+      var o = AC.createOscillator(), g = AC.createGain();
+      o.connect(g); g.connect(AC.destination); o.type = type;
+      var t = AC.currentTime + delay;
+      o.frequency.setValueAtTime(f0, t);
+      o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+      g.gain.setValueAtTime(0.001, t);
+      g.gain.linearRampToValueAtTime(gain, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.start(t); o.stop(t + dur + 0.01);
+    } catch (e) {}
+  }
+
+  function skImpact() {
+    /* Strong device vibration — two sharp punches */
+    if (navigator.vibrate) navigator.vibrate([90, 40, 140]);
+
+    if (!AC) return;
+    try {
+      (AC.state === 'suspended' ? AC.resume() : Promise.resolve()).then(function () {
+        /* Deep sub-bass thud */
+        osc('sine',     72,  28, 0.95, 0,    0.18);
+        /* Second heavier punch */
+        osc('sine',     80,  24, 0.80, 0.04, 0.16);
+        /* High transient click for snap */
+        osc('triangle', 320, 90, 0.45, 0,    0.06);
+        /* Low rumble tail */
+        osc('sine',     44,  18, 0.55, 0.06, 0.22);
+      });
+    } catch (e) {}
+  }
+
+  /* ════════════════════════════════════════════════════════════════
    *  TIMELINE
    * ════════════════════════════════════════════════════════════════ */
 
@@ -157,6 +196,7 @@
   setTimeout(function () {
     scrambleTo(logo, 'Saeed Khoury', 'SK', 480, function () {
       logo.className = 'sk-big';
+      skImpact();
     });
   }, 1500);
 
