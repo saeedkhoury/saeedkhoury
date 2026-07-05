@@ -1,16 +1,14 @@
 /* ─────────────────────────────────────────────────────────────────────── *
- *  MARK v15                                                                *
+ *  MARK v16                                                                *
  *                                                                          *
- *  Desktop : auto-start, AudioContext ready                               *
- *  iOS     : glitch plays immediately → user taps → AC unlocked →        *
- *            animation runs → SK impact with full audio + shake           *
- *  Android : same as iOS but also fires navigator.vibrate                 *
+ *  All devices : glitch plays immediately → auto-start → SK impact       *
+ *  Android     : also fires navigator.vibrate                             *
  * ─────────────────────────────────────────────────────────────────────────*/
 (function () {
   'use strict';
 
   /* ── Stale cleanup ───────────────────────────────────────────── */
-  ['sk-stage', 'sk-kf', 'sk-logo', 'sk-tap'].forEach(function (id) {
+  ['sk-stage', 'sk-kf', 'sk-logo'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el && el.parentNode) el.parentNode.removeChild(el);
   });
@@ -47,17 +45,6 @@
       '0%  {transform:translate(-50%,-50%) scale(1);  opacity:1;filter:blur(0);}',
       '100%{transform:translate(-50%,-50%) scale(18); opacity:0;filter:blur(14px);}',
     '}',
-
-    /* Tap prompt — mobile only, glitch-green monospace pulse */
-    '#sk-tap{',
-      'position:fixed;bottom:2.2rem;left:50%;transform:translateX(-50%);',
-      'z-index:10003;',
-      'font-family:"JetBrains Mono",monospace;font-size:0.7rem;',
-      'color:rgba(0,255,80,0.75);letter-spacing:0.22em;',
-      'pointer-events:none;white-space:nowrap;',
-      'animation:sk-tap-pulse 1.4s ease-in-out infinite;',
-    '}',
-    '@keyframes sk-tap-pulse{0%,100%{opacity:0.35}50%{opacity:1}}',
 
     /* Full-screen shake — strong, felt physically */
     '@keyframes sk-shk{',
@@ -163,8 +150,7 @@
    *  ② All      → full-screen CSS shake
    *  ③ All      → white flash
    *  ④ All      → white-noise audio burst + oscillator thud
-   *     (audio guaranteed to fire because AC is unlocked before
-   *      the animation even starts — see tap-gate below)
+   *     (desktop + Android; iOS may block audio without prior gesture)
    * ════════════════════════════════════════════════════════════════ */
   function osc(type, f0, f1, gain, delay, dur) {
     try {
@@ -268,47 +254,8 @@
   drawGlitch();
 
   /* ════════════════════════════════════════════════════════════════
-   *  TAP GATE
-   *
-   *  Touch devices: glitch plays → "[ tap anywhere ]" pulses →
-   *    first touch unlocks AC + primes audio graph + starts animation
-   *
-   *  Desktop: auto-starts immediately (no gate needed, AC unlocks
-   *    on first interaction naturally or works without unlock)
+   *  AUTO-START (all devices)
    * ════════════════════════════════════════════════════════════════ */
-  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-
-  if (isTouch) {
-    var tapEl = document.createElement('div');
-    tapEl.id = 'sk-tap';
-    tapEl.textContent = '[ tap anywhere ]';
-    document.body.appendChild(tapEl);
-
-    document.addEventListener('touchstart', function onFirstTouch() {
-      document.removeEventListener('touchstart', onFirstTouch, true);
-
-      /* Remove prompt */
-      if (tapEl.parentNode) tapEl.parentNode.removeChild(tapEl);
-
-      /* Unlock AudioContext — must happen inside a touch event handler */
-      if (AC) {
-        AC.resume().then(function () {
-          /* Prime the audio graph with a silent 1-sample buffer */
-          try {
-            var prime = AC.createBufferSource();
-            prime.buffer = AC.createBuffer(1, 1, AC.sampleRate);
-            prime.connect(AC.destination);
-            prime.start(0);
-          } catch (e) {}
-        }).catch(function () {});
-      }
-
-      startAnimation();
-    }, true);
-
-  } else {
-    /* Desktop — no gate */
-    startAnimation();
-  }
+  startAnimation();
 
 })();
