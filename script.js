@@ -436,13 +436,35 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
   if (chatEl) chatObs.observe(chatEl);
 })();
 
+/* ─── Project detail descriptions ──────────────────────────────── */
+const projDesc = {
+  wine: "Built as part of a Database Management Systems course, this desktop app was planned around a normalized MySQL schema mapping wine chemical attributes — pH, alcohol, sulfur dioxide, residual sugar — to relational tables. The JavaFX interface was built in layers: a searchable data grid first, then live chart panels using the JavaFX Charts API, then email reporting via JavaMail. Development followed a classic MVC pattern with no AI tooling — the goal was mastering SQL joins, query optimization, and desktop GUI frameworks as core coursework deliverables.",
+
+  smn: "A full software engineering lifecycle project simulating a real industry engagement for a multi-role smart fuel station. Work began with stakeholder analysis and requirements elicitation, formalized into an IEEE-standard SRS document. From there came a complete set of UML diagrams — use-case, activity, sequence, class, and deployment — plus logical and physical architecture models (SAD). Claude AI was used to review requirement consistency, cross-check diagram relationships against the SRS, and sharpen the technical writing. The result is a fully documented system blueprint ready for a dev team to implement.",
+
+  fixphone: "Designed around the real daily workflow of a phone repair shop. Planning started by mapping every business entity — customers, devices, technicians, service orders, parts, warranties — into a 15-table normalized MySQL schema. The schema was deployed both locally and on Microsoft Azure for cloud-accessible data. A Python Tkinter desktop dashboard connects to the database in real time, providing full CRUD interfaces for managing repairs and generating technician assignments. Claude AI helped optimize complex SQL queries and suggested indexing strategies to keep the reporting views fast.",
+
+  portfolio: "This portfolio was built entirely through vibecoding with Claude AI as the core development partner. The concept: a cinematic dark site with a glitch intro that scrambles 'Saeed Khoury' into the initials 'SK,' locks in with a full-screen shake and audio burst, then fades into the site. Claude helped design the canvas-based glitch animation, engineer the AudioContext unlock sequence for iOS, build the IntersectionObserver scroll-reveal system, implement the bilingual Hebrew/English toggle, and create this horizontal project carousel — all through iterative prompting, refining and testing each feature step by step.",
+
+  law: "A professional website commissioned for a bilingual Israeli law firm. The planning phase mapped the firm's services, defined RTL Hebrew/Arabic layout requirements, and established a dark gold starfield visual identity to convey prestige and authority. Claude AI was the main development tool — it architected the trilingual language switcher (Hebrew, Arabic, English), engineered the RTL/LTR CSS toggle, built the curtain intro animation, wired up the accessibility panel, and integrated WhatsApp for direct mobile contact. The site is fully responsive, keyboard-navigable, and switches seamlessly between all three languages and reading directions."
+};
+
+function openDetail(src, caption, key) {
+  openLightbox(src, caption, projDesc[key] || '');
+}
+
 /* ─── Lightbox ─────────────────────────────────────────────────── */
-function openLightbox(src, caption) {
-  const lb  = document.getElementById('lightbox');
-  const img = document.getElementById('lb-img');
-  const cap = document.getElementById('lb-caption');
+function openLightbox(src, caption, desc) {
+  const lb   = document.getElementById('lightbox');
+  const img  = document.getElementById('lb-img');
+  const cap  = document.getElementById('lb-caption');
+  const dsc  = document.getElementById('lb-desc');
   img.src = src;
   if (cap) cap.textContent = caption || '';
+  if (dsc) {
+    dsc.textContent = desc || '';
+    dsc.classList.toggle('visible', !!desc);
+  }
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
 }

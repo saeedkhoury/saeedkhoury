@@ -221,7 +221,7 @@
           </picture>
           <div class="proj-hover">
             <button class="proj-view" onclick="openLightbox('assets/projects/wine.webp','Wine Data Analysis')">View</button>
-            <button class="proj-view" onclick="openLightbox('assets/projects/winep.webp','Wine Data Analysis – Detail')">Detail</button>
+            <button class="proj-view" onclick="openDetail('assets/projects/winep.webp','Wine Data Analysis – Detail','wine')">Detail</button>
           </div>
         </div>
         <div class="proj-body">
@@ -239,7 +239,7 @@
           </picture>
           <div class="proj-hover">
             <button class="proj-view" onclick="openLightbox('assets/projects/SMN.webp','Smart Fuel Station')">View</button>
-            <button class="proj-view" onclick="openLightbox('assets/projects/SMN-.webp','Smart Fuel Station – Detail')">Detail</button>
+            <button class="proj-view" onclick="openDetail('assets/projects/SMN-.webp','Smart Fuel Station – Detail','smn')">Detail</button>
           </div>
         </div>
         <div class="proj-body">
@@ -257,7 +257,7 @@
           </picture>
           <div class="proj-hover">
             <button class="proj-view" onclick="openLightbox('assets/projects/FP.webp','FixPhone SQL DB')">View</button>
-            <button class="proj-view" onclick="openLightbox('assets/projects/FP1.webp','FixPhone SQL DB – Detail')">Detail</button>
+            <button class="proj-view" onclick="openDetail('assets/projects/FP1.webp','FixPhone SQL DB – Detail','fixphone')">Detail</button>
           </div>
         </div>
         <div class="proj-body">
@@ -275,7 +275,7 @@
           </picture>
           <div class="proj-hover">
             <button class="proj-view" onclick="openLightbox('assets/projects/sk-portfolio.webp','SK Portfolio')">View</button>
-            <button class="proj-view" onclick="openLightbox('assets/projects/sk-portfolio-detail.webp','SK Portfolio – Projects')">Detail</button>
+            <button class="proj-view" onclick="openDetail('assets/projects/sk-portfolio-detail.webp','SK Portfolio – Projects','portfolio')">Detail</button>
           </div>
         </div>
         <div class="proj-body">
@@ -293,7 +293,7 @@
           </picture>
           <div class="proj-hover">
             <button class="proj-view" onclick="openLightbox('assets/projects/khoury-law.webp','Khoury Law Firm')">View</button>
-            <button class="proj-view" onclick="openLightbox('assets/projects/khoury-law-detail.webp','Khoury Law Firm – Services')">Detail</button>
+            <button class="proj-view" onclick="openDetail('assets/projects/khoury-law-detail.webp','Khoury Law Firm – Services','law')">Detail</button>
           </div>
         </div>
         <div class="proj-body">
@@ -316,7 +316,10 @@
   <div class="lb-content">
     <button class="lb-close" onclick="closeLightbox()">✕</button>
     <img id="lb-img" src="" alt="" />
-    <p id="lb-caption"></p>
+    <div class="lb-body">
+      <span id="lb-caption"></span>
+      <p id="lb-desc"></p>
+    </div>
   </div>
 </div>
 
