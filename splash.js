@@ -1,12 +1,16 @@
 /* ─────────────────────────────────────────────────────────────────────── *
- *  MARK v14 — Saeed Khoury → scramble → SK → zoom → site reveals         *
- *  Haptic: Android navigator.vibrate + iOS white-noise burst + shake      *
+ *  MARK v15                                                                *
+ *                                                                          *
+ *  Desktop : auto-start, AudioContext ready                               *
+ *  iOS     : glitch plays immediately → user taps → AC unlocked →        *
+ *            animation runs → SK impact with full audio + shake           *
+ *  Android : same as iOS but also fires navigator.vibrate                 *
  * ─────────────────────────────────────────────────────────────────────────*/
 (function () {
   'use strict';
 
   /* ── Stale cleanup ───────────────────────────────────────────── */
-  ['sk-stage', 'sk-kf', 'sk-logo'].forEach(function (id) {
+  ['sk-stage', 'sk-kf', 'sk-logo', 'sk-tap'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el && el.parentNode) el.parentNode.removeChild(el);
   });
@@ -14,19 +18,8 @@
   if (sessionStorage.getItem('sk-intro')) return;
   sessionStorage.setItem('sk-intro', '1');
 
-  /* AudioContext — unlock immediately on first touch (iOS requirement) */
   var AC = null;
   try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
-
-  function unlockAC() {
-    if (AC && AC.state === 'suspended') AC.resume();
-    document.removeEventListener('touchstart', unlockAC, true);
-    document.removeEventListener('touchend',   unlockAC, true);
-    document.removeEventListener('click',      unlockAC, true);
-  }
-  document.addEventListener('touchstart', unlockAC, true);
-  document.addEventListener('touchend',   unlockAC, true);
-  document.addEventListener('click',      unlockAC, true);
 
   document.body.style.overflow = 'hidden';
 
@@ -40,14 +33,11 @@
     '#sk-logo{',
       'position:fixed;top:50%;left:50%;',
       'transform:translate(-50%,-50%);',
-      'z-index:10002;',
-      'color:#fff;',
+      'z-index:10002;color:#fff;',
       'font-family:"Space Grotesk",system-ui,sans-serif;',
-      'font-weight:900;',
-      'white-space:nowrap;',
+      'font-weight:900;white-space:nowrap;',
       'pointer-events:none;user-select:none;text-align:center;',
-      'font-size:clamp(2.4rem,5.5vw,4.2rem);',
-      'opacity:0;',
+      'font-size:clamp(2.4rem,5.5vw,4.2rem);opacity:0;',
     '}',
     '#sk-logo.sk-vis  { opacity:1; transition:opacity .4s ease; }',
     '#sk-logo.sk-big  { font-size:clamp(5rem,11vw,7.5rem); opacity:1; transition:font-size .3s ease; }',
@@ -58,16 +48,29 @@
       '100%{transform:translate(-50%,-50%) scale(18); opacity:0;filter:blur(14px);}',
     '}',
 
-    /* Full-screen shake — felt on ALL devices (iOS + Android) */
+    /* Tap prompt — mobile only, glitch-green monospace pulse */
+    '#sk-tap{',
+      'position:fixed;bottom:2.2rem;left:50%;transform:translateX(-50%);',
+      'z-index:10003;',
+      'font-family:"JetBrains Mono",monospace;font-size:0.7rem;',
+      'color:rgba(0,255,80,0.75);letter-spacing:0.22em;',
+      'pointer-events:none;white-space:nowrap;',
+      'animation:sk-tap-pulse 1.4s ease-in-out infinite;',
+    '}',
+    '@keyframes sk-tap-pulse{0%,100%{opacity:0.35}50%{opacity:1}}',
+
+    /* Full-screen shake — strong, felt physically */
     '@keyframes sk-shk{',
-      '0%  {transform:translate(0,0)}',
-      '14% {transform:translate(-12px,8px)}',
-      '28% {transform:translate(11px,-10px)}',
-      '42% {transform:translate(-9px,9px)}',
-      '58% {transform:translate(8px,-7px)}',
-      '72% {transform:translate(-5px,4px)}',
-      '86% {transform:translate(3px,-2px)}',
-      '100%{transform:translate(0,0)}',
+      '0%  {transform:translate(0,0) scale(1)}',
+      '7%  {transform:translate(-24px,16px) scale(1.04)}',
+      '16% {transform:translate(22px,-20px) scale(0.96)}',
+      '26% {transform:translate(-18px,17px) scale(1.02)}',
+      '37% {transform:translate(15px,-13px) scale(0.98)}',
+      '49% {transform:translate(-10px,9px) scale(1.01)}',
+      '61% {transform:translate(7px,-6px) scale(0.99)}',
+      '73% {transform:translate(-4px,3px) scale(1)}',
+      '86% {transform:translate(2px,-1px) scale(1)}',
+      '100%{transform:translate(0,0) scale(1)}',
     '}',
   ].join('');
   document.head.appendChild(kf);
@@ -117,28 +120,20 @@
         : 'rgba(0,255,80,'   + a + ')';
       ctx.fillRect(0, y, W * (0.35 + Math.random() * 0.65), h);
     }
-
     for (var j = 0; j < 7; j++) {
       ctx.fillStyle = 'rgba(0,0,0,' + (0.38 + Math.random() * 0.38) + ')';
       ctx.fillRect(0, Math.random() * H, W, 2 + Math.random() * 9);
     }
-
     ctx.font = '11px "JetBrains Mono",monospace';
     var dchars = '01234![]{}|#';
     for (var k = 0; k < 38; k++) {
       ctx.fillStyle = 'rgba(0,255,80,' + (0.3 + Math.random() * 0.5) + ')';
-      ctx.fillText(
-        dchars[Math.random() * dchars.length | 0],
-        Math.random() * W,
-        Math.random() * H
-      );
+      ctx.fillText(dchars[Math.random() * dchars.length | 0], Math.random() * W, Math.random() * H);
     }
-
     for (var s = 0; s < H; s += 3) {
       ctx.fillStyle = 'rgba(0,0,0,0.07)';
       ctx.fillRect(0, s, W, 1);
     }
-
     glitchRaf = requestAnimationFrame(drawGlitch);
   }
 
@@ -164,10 +159,12 @@
   /* ════════════════════════════════════════════════════════════════
    *  SK IMPACT
    *
-   *  Android : navigator.vibrate two-punch pattern
-   *  iOS     : white-noise audio burst (physically moves speaker cone)
-   *            + shaped oscillator thud
-   *  All     : full-screen CSS shake (visual + physical sensation)
+   *  ① Android  → navigator.vibrate two-punch
+   *  ② All      → full-screen CSS shake
+   *  ③ All      → white flash
+   *  ④ All      → white-noise audio burst + oscillator thud
+   *     (audio guaranteed to fire because AC is unlocked before
+   *      the animation even starts — see tap-gate below)
    * ════════════════════════════════════════════════════════════════ */
   function osc(type, f0, f1, gain, delay, dur) {
     try {
@@ -184,33 +181,42 @@
   }
 
   function skImpact() {
-    /* 1 — Android vibration */
+    /* ① Android vibration */
     if (navigator.vibrate) navigator.vibrate([90, 40, 140]);
 
-    /* 2 — Full-screen shake (works on every device, no permissions needed) */
-    stage.style.animation = 'sk-shk 0.42s ease-out';
-    setTimeout(function () { stage.style.animation = ''; }, 450);
+    /* ② Full-screen shake */
+    stage.style.animation = 'sk-shk 0.45s ease-out';
+    setTimeout(function () { stage.style.animation = ''; }, 480);
 
-    /* 3 — Audio impact (white-noise burst = iPhone Taptic-Engine substitute) */
+    /* ③ White flash */
+    var fl = document.createElement('div');
+    fl.style.cssText = [
+      'position:fixed;inset:0;z-index:20000;background:#fff',
+      'pointer-events:none;opacity:1;transition:opacity 0.22s ease-out',
+    ].join(';');
+    document.body.appendChild(fl);
+    setTimeout(function () { fl.style.opacity = '0'; }, 20);
+    setTimeout(function () { if (fl.parentNode) fl.parentNode.removeChild(fl); }, 320);
+
+    /* ④ Audio (AC is guaranteed unlocked at this point on mobile) */
     if (!AC) return;
     try {
       (AC.state === 'suspended' ? AC.resume() : Promise.resolve()).then(function () {
         var t  = AC.currentTime;
         var sr = AC.sampleRate;
 
-        /* White-noise burst: fast-attack shaped noise moves iPhone speaker cone */
-        var bufLen = (sr * 0.10) | 0;
+        /* White-noise burst — physically moves iPhone speaker cone */
+        var bufLen = (sr * 0.12) | 0;
         var buf    = AC.createBuffer(1, bufLen, sr);
         var data   = buf.getChannelData(0);
         for (var i = 0; i < bufLen; i++) {
-          /* Exponential envelope: instant attack, quick decay */
           data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufLen, 2.2);
         }
-        var ns  = AC.createBufferSource();
+        var ns = AC.createBufferSource();
         ns.buffer = buf;
-        var ng  = AC.createGain();
-        ng.gain.setValueAtTime(0.9, t);
-        ng.gain.exponentialRampToValueAtTime(0.001, t + 0.10);
+        var ng = AC.createGain();
+        ng.gain.setValueAtTime(1.0, t);
+        ng.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
         ns.connect(ng); ng.connect(AC.destination);
         ns.start(t);
 
@@ -219,48 +225,90 @@
         osc('sine',     80, 22, 0.82, 0.03, 0.18);
         /* High transient snap */
         osc('triangle', 340, 85, 0.48, 0,   0.06);
-        /* Low rumble tail */
+        /* Rumble tail */
         osc('sine',     44, 16, 0.55, 0.06, 0.24);
       });
     } catch (e) {}
   }
 
   /* ════════════════════════════════════════════════════════════════
-   *  TIMELINE
+   *  ANIMATION SEQUENCE  (called after AC is unlocked)
    * ════════════════════════════════════════════════════════════════ */
+  function startAnimation() {
+    setTimeout(function () { logo.classList.add('sk-vis'); }, 200);
 
+    setTimeout(function () {
+      scrambleTo(logo, 'Saeed Khoury', 'SK', 480, function () {
+        logo.className = 'sk-big';
+        skImpact();
+      });
+    }, 1500);
+
+    setTimeout(function () { logo.className = 'sk-zoom'; }, 4500);
+
+    setTimeout(function () {
+      glitchActive = false;
+      if (glitchRaf) cancelAnimationFrame(glitchRaf);
+      stage.style.opacity = '0';
+      document.body.style.overflow = '';
+    }, 5600);
+
+    setTimeout(function () {
+      if (stage.parentNode) stage.parentNode.removeChild(stage);
+      if (logo.parentNode)  logo.parentNode.removeChild(logo);
+      var kfEl = document.getElementById('sk-kf');
+      if (kfEl && kfEl.parentNode) kfEl.parentNode.removeChild(kfEl);
+    }, 6400);
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+   *  GLITCH STARTS IMMEDIATELY (all devices)
+   * ════════════════════════════════════════════════════════════════ */
   glitchActive = true;
   drawGlitch();
 
-  setTimeout(function () { logo.classList.add('sk-vis'); }, 200);
+  /* ════════════════════════════════════════════════════════════════
+   *  TAP GATE
+   *
+   *  Touch devices: glitch plays → "[ tap anywhere ]" pulses →
+   *    first touch unlocks AC + primes audio graph + starts animation
+   *
+   *  Desktop: auto-starts immediately (no gate needed, AC unlocks
+   *    on first interaction naturally or works without unlock)
+   * ════════════════════════════════════════════════════════════════ */
+  var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-  /* Scramble → SK, then fire impact */
-  setTimeout(function () {
-    scrambleTo(logo, 'Saeed Khoury', 'SK', 480, function () {
-      logo.className = 'sk-big';
-      skImpact();
-    });
-  }, 1500);
+  if (isTouch) {
+    var tapEl = document.createElement('div');
+    tapEl.id = 'sk-tap';
+    tapEl.textContent = '[ tap anywhere ]';
+    document.body.appendChild(tapEl);
 
-  /* SK zooms toward viewer */
-  setTimeout(function () {
-    logo.className = 'sk-zoom';
-  }, 4500);
+    document.addEventListener('touchstart', function onFirstTouch() {
+      document.removeEventListener('touchstart', onFirstTouch, true);
 
-  /* Stop glitch, fade stage out, restore scroll */
-  setTimeout(function () {
-    glitchActive = false;
-    if (glitchRaf) cancelAnimationFrame(glitchRaf);
-    stage.style.opacity = '0';
-    document.body.style.overflow = '';
-  }, 5600);
+      /* Remove prompt */
+      if (tapEl.parentNode) tapEl.parentNode.removeChild(tapEl);
 
-  /* Cleanup */
-  setTimeout(function () {
-    if (stage.parentNode) stage.parentNode.removeChild(stage);
-    if (logo.parentNode)  logo.parentNode.removeChild(logo);
-    var kfEl = document.getElementById('sk-kf');
-    if (kfEl && kfEl.parentNode) kfEl.parentNode.removeChild(kfEl);
-  }, 6400);
+      /* Unlock AudioContext — must happen inside a touch event handler */
+      if (AC) {
+        AC.resume().then(function () {
+          /* Prime the audio graph with a silent 1-sample buffer */
+          try {
+            var prime = AC.createBufferSource();
+            prime.buffer = AC.createBuffer(1, 1, AC.sampleRate);
+            prime.connect(AC.destination);
+            prime.start(0);
+          } catch (e) {}
+        }).catch(function () {});
+      }
+
+      startAnimation();
+    }, true);
+
+  } else {
+    /* Desktop — no gate */
+    startAnimation();
+  }
 
 })();
