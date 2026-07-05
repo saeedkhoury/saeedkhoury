@@ -207,7 +207,11 @@
       <h2 class="section-title" data-i18n="projects.title">Things I've shipped</h2>
     </div>
 
-    <div class="projects-grid">
+    <div class="projects-carousel">
+      <button class="proj-carousel-btn prev" id="proj-prev" aria-label="Previous">&#8592;</button>
+      <button class="proj-carousel-btn next" id="proj-next" aria-label="Next">&#8594;</button>
+      <div class="projects-track-wrap">
+      <div class="projects-grid" id="proj-track">
 
       <div class="proj-card reveal" style="--d:0s">
         <div class="proj-img">
@@ -299,7 +303,10 @@
         </div>
       </div>
 
-    </div>
+      </div><!-- /projects-grid -->
+      </div><!-- /projects-track-wrap -->
+      <div class="proj-carousel-dots" id="proj-dots"></div>
+    </div><!-- /projects-carousel -->
   </div>
 </section>
 

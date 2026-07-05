@@ -593,10 +593,57 @@ body {
 
 /* ─── Projects ───────────────────────────────────────────────── */
 .projects { }
+.projects-carousel {
+  position: relative;
+}
+.projects-track-wrap {
+  overflow: hidden;
+}
 .projects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 1.5rem;
+  transition: transform 0.45s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+.proj-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.proj-carousel-btn:hover { background: rgba(124,58,237,0.2); border-color: rgba(124,58,237,0.5); }
+.proj-carousel-btn.disabled { opacity: 0.25; pointer-events: none; }
+.proj-carousel-btn.prev { left: -1.4rem; }
+.proj-carousel-btn.next { right: -1.4rem; }
+.proj-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 1.5rem;
+}
+.proj-carousel-dots span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.proj-carousel-dots span.active {
+  background: var(--accent);
+  transform: scale(1.35);
 }
 .proj-card {
   background: var(--surface);
@@ -605,6 +652,8 @@ body {
   overflow: hidden;
   transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
   animation-delay: var(--d, 0s);
+  flex: 0 0 calc(33.333% - 1rem);
+  min-width: 0;
 }
 .proj-card:hover {
   transform: translateY(-6px);
@@ -899,7 +948,9 @@ body {
 /* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .vibe-tools { grid-template-columns: repeat(2, 1fr); }
-  .projects-grid { grid-template-columns: 1fr 1fr; }
+  .proj-card { flex: 0 0 calc(50% - 0.75rem); }
+  .proj-carousel-btn.prev { left: -0.8rem; }
+  .proj-carousel-btn.next { right: -0.8rem; }
 }
 
 @media (max-width: 768px) {
@@ -932,7 +983,9 @@ body {
 
   .about-grid { grid-template-columns: 1fr; }
   .vibe-tools  { grid-template-columns: 1fr 1fr; }
-  .projects-grid { grid-template-columns: 1fr; }
+  .proj-card { flex: 0 0 calc(100% - 0rem); }
+  .proj-carousel-btn.prev { left: -0.5rem; }
+  .proj-carousel-btn.next { right: -0.5rem; }
   .contact-grid  { grid-template-columns: 1fr; }
   .social-sidebar { display: none; }
 

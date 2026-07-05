@@ -461,3 +461,63 @@ document.getElementById('lang-toggle').addEventListener('click', function() {
 
 /* Apply stored language preference on load */
 if (currentLang === 'he') setLang('he');
+
+/* ─── Projects carousel ────────────────────────────────────────── */
+(function () {
+  const track  = document.getElementById('proj-track');
+  const wrap   = track && track.parentElement;
+  const prev   = document.getElementById('proj-prev');
+  const next   = document.getElementById('proj-next');
+  const dotsEl = document.getElementById('proj-dots');
+  if (!track || !prev || !next) return;
+
+  const cards = Array.from(track.children);
+  let current = 0;
+
+  function visibleCount() {
+    const w = wrap.offsetWidth;
+    if (w < 600)  return 1;
+    if (w < 960)  return 2;
+    return 3;
+  }
+
+  function cardWidth() {
+    return cards[0] ? cards[0].offsetWidth + 24 : 0; // 24 = gap (1.5rem)
+  }
+
+  function maxIndex() {
+    return Math.max(0, cards.length - visibleCount());
+  }
+
+  function go(idx) {
+    current = Math.max(0, Math.min(idx, maxIndex()));
+    track.style.transform = `translateX(-${current * cardWidth()}px)`;
+    prev.classList.toggle('disabled', current === 0);
+    next.classList.toggle('disabled', current >= maxIndex());
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  // Build dots
+  const dots = cards.map((_, i) => {
+    const d = document.createElement('span');
+    d.addEventListener('click', () => go(i));
+    dotsEl.appendChild(d);
+    return d;
+  });
+
+  prev.addEventListener('click', () => go(current - 1));
+  next.addEventListener('click', () => go(current + 1));
+
+  // Touch / swipe support
+  let startX = 0;
+  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) go(current + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+
+  // Re-calc on resize
+  window.addEventListener('resize', () => go(current));
+
+  go(0);
+})();
